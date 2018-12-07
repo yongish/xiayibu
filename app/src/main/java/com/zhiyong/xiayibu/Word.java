@@ -12,6 +12,7 @@ public class Word {
     @ColumnInfo(name = "word")
     private String mWord;
 
+    // Time added.
     private long timestamp;
 
     public Word(@NonNull String mWord, @NonNull long timestamp) {
