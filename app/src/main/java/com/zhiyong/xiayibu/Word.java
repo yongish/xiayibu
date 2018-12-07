@@ -19,7 +19,7 @@ public class Word {
         this.timestamp = timestamp;
     }
 
-    public String getmWord() {
+    public String getWord() {
         return mWord;
     }
 
