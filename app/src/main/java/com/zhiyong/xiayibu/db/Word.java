@@ -12,22 +12,12 @@ public class Word {
     @ColumnInfo(name = "word")
     private String mWord;
 
-    // Time added.
-    @NonNull
-    private long timestamp;
-
-    public Word(@NonNull String mWord, @NonNull long timestamp) {
+    public Word(@NonNull String mWord) {
         this.mWord = mWord;
-        this.timestamp = timestamp;
     }
 
     @NonNull
     public String getWord() {
         return mWord;
-    }
-
-    @NonNull
-    public long getTimestamp() {
-        return timestamp;
     }
 }

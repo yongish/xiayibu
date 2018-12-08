@@ -13,17 +13,16 @@ import java.util.List;
 public class WordViewModel extends AndroidViewModel {
 
     private WordRepository mRepository;
-
-    private LiveData<List<Word>> mAllWords;
+    private LiveData<List<WordItem>> mAllWordItems;
 
     public WordViewModel(@NonNull Application application) {
         super(application);
         mRepository = new WordRepository(application);
-        mAllWords = mRepository.getAllWords();
+        mAllWordItems = mRepository.getWordItems();
     }
 
-    public LiveData<List<Word>> getAllWords() {
-        return mAllWords;
+    public LiveData<List<WordItem>> getWordItems() {
+        return mAllWordItems;
     }
 
     public void insert(Word word) {

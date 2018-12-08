@@ -10,13 +10,13 @@ public class Article {
     @NonNull
     private String url;
     @NonNull
-    private long timestamp;
+    private long timestamp_added;
     @NonNull
     private long timestamp_published;
 
-    public Article(@NonNull String url, @NonNull long timestamp, @NonNull long timestamp_published) {
+    public Article(@NonNull String url, @NonNull long timestamp_added, @NonNull long timestamp_published) {
         this.url = url;
-        this.timestamp = timestamp;
+        this.timestamp_added = timestamp_added;
         this.timestamp_published = timestamp_published;
     }
 
@@ -26,8 +26,8 @@ public class Article {
     }
 
     @NonNull
-    public long getTimestamp() {
-        return timestamp;
+    public long getTimestamp_added() {
+        return timestamp_added;
     }
 
     @NonNull

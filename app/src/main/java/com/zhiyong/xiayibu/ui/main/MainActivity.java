@@ -41,10 +41,10 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mWordViewModel = ViewModelProviders.of(this).get(WordViewModel.class);
-        mWordViewModel.getAllWords().observe(this, new Observer<List<Word>>() {
+        mWordViewModel.getWordItems().observe(this, new Observer<List<WordItem>>() {
             @Override
-            public void onChanged(@Nullable List<Word> words) {
-                adapter.setWords(words);
+            public void onChanged(@Nullable List<WordItem> wordItems) {
+                adapter.setWordItems(wordItems);
             }
         });
 
@@ -73,12 +73,12 @@ public class MainActivity extends AppCompatActivity {
                     public void onSwiped(RecyclerView.ViewHolder viewHolder,
                                          int direction) {
                         int position = viewHolder.getAdapterPosition();
-                        Word myWord = adapter.getWordAtPosition(position);
+                        WordItem myWord = adapter.getWordAtPosition(position);
                         Toast.makeText(MainActivity.this, "Deleting " +
                                 myWord.getWord(), Toast.LENGTH_LONG).show();
 
                         // Delete the word
-                        mWordViewModel.deleteWord(myWord);
+                        mWordViewModel.deleteWord(new Word(myWord.getWord()));
                     }
                 });
 
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
             // todo: Get timestamp.
-            Word word = new Word(data.getStringExtra(NewWordActivity.EXTRA_REPLY), 1);
+            Word word = new Word(data.getStringExtra(NewWordActivity.EXTRA_REPLY));
             mWordViewModel.insert(word);
         } else {
             Toast.makeText(getApplicationContext(), R.string.empty_not_saved, Toast.LENGTH_LONG).show();

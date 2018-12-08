@@ -9,17 +9,21 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.zhiyong.xiayibu.R;
-import com.zhiyong.xiayibu.db.Word;
 
+import java.util.Date;
 import java.util.List;
+
+import static java.text.DateFormat.*;
 
 public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
 
+    private Context context;
     private final LayoutInflater mInflater;
-    private List<Word> mWords;
+    private List<WordItem> mWordItems;
 
     public WordListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
+        this.context = context;
     }
 
     @NonNull
@@ -31,35 +35,65 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
 
     @Override
     public void onBindViewHolder(@NonNull WordListAdapter.WordViewHolder wordViewHolder, int i) {
-        if (mWords != null) {
-            Word current = mWords.get(i);
+        if (mWordItems != null) {
+            WordItem current = mWordItems.get(i);
             wordViewHolder.wordItemView.setText(current.getWord());
-            // todo: Also need to show time added.
+            wordViewHolder.tvTimeAdded.setText(
+                    getDateInstance().format(new Date(current.getTimeAdded()))
+            );
+            int articleCount = current.getArticleCount();
+            wordViewHolder.tvArticleCount.setText(String.format(
+                    context.getResources().getQuantityString(
+                            R.plurals.article_count, articleCount
+                    ), articleCount));
+            wordViewHolder.tvLastAskedResponse.setText(String.format("%s at %s",
+                    responseString(current.getLastAskedResponse()),
+                    getDateTimeInstance(MEDIUM, SHORT).format(new Date(current.getTimeLastAsked()))
+            ));
         }
     }
 
-    public void setWords(List<Word> words) {
-        mWords = words;
+    private String responseString(int response) {
+        if (response == 0) {
+            return "Yes";
+        }
+        if (response == 1) {
+            return "No";
+        }
+        if (response == 2) {
+            return "Never";
+        }
+        throw new IllegalArgumentException("Invalid response number.");
+    }
+
+    public void setWordItems(List<WordItem> wordItems) {
+        mWordItems = wordItems;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        if (mWords != null)
-            return mWords.size();
+        if (mWordItems != null)
+            return mWordItems.size();
         else return 0;
     }
 
-    public Word getWordAtPosition (int position) {
-        return mWords.get(position);
+    public WordItem getWordAtPosition (int position) {
+        return mWordItems.get(position);
     }
 
     class WordViewHolder extends RecyclerView.ViewHolder {
         private final TextView wordItemView;
+        private final TextView tvTimeAdded;
+        private final TextView tvArticleCount;
+        private final TextView tvLastAskedResponse;
 
         private WordViewHolder(View itemView) {
             super(itemView);
             wordItemView = itemView.findViewById(R.id.tvWord);
+            tvTimeAdded = itemView.findViewById(R.id.tvTimeAdded);
+            tvArticleCount = itemView.findViewById(R.id.tvArticleCount);
+            tvLastAskedResponse = itemView.findViewById(R.id.tvLastAskedResponse);
         }
     }
 }

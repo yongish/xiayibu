@@ -6,8 +6,6 @@ import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-import com.zhiyong.xiayibu.db.Word;
-
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 @Entity(indices = @Index("word"), foreignKeys =
@@ -22,12 +20,12 @@ public class Question {
     @NonNull
     private String word;
     @NonNull
-    private int correct;
+    private int response;
 
-    public Question(@NonNull long timestamp, @NonNull String word, @NonNull int correct) {
+    public Question(@NonNull long timestamp, @NonNull String word, @NonNull int response) {
         this.timestamp = timestamp;
         this.word = word;
-        this.correct = correct;
+        this.response = response;
     }
 
     @NonNull
@@ -50,7 +48,7 @@ public class Question {
     }
 
     @NonNull
-    public int getCorrect() {
-        return correct;
+    public int getResponse() {
+        return response;
     }
 }

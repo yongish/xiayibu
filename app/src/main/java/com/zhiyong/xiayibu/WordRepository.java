@@ -5,21 +5,22 @@ import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
 import com.zhiyong.xiayibu.db.Word;
+import com.zhiyong.xiayibu.ui.main.WordItem;
 
 import java.util.List;
 
 public class WordRepository {
     private WordDao mWordDao;
-    private LiveData<List<Word>> mAllWords;
+    private LiveData<List<WordItem>> mWordItems;
 
     public WordRepository(Application application) {
         WordRoomDatabase db = WordRoomDatabase.getDatabase(application);
         mWordDao = db.wordDao();
-        mAllWords = mWordDao.getAllWords();
+        mWordItems = mWordDao.getWordItems();
     }
 
-    public LiveData<List<Word>> getAllWords() {
-        return mAllWords;
+    public LiveData<List<WordItem>> getWordItems() {
+        return mWordItems;
     }
 
     public void insert(Word word) {
