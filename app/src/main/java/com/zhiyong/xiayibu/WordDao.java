@@ -6,6 +6,8 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
+import com.zhiyong.xiayibu.db.Word;
+
 import java.util.List;
 
 import static android.arch.persistence.room.OnConflictStrategy.IGNORE;

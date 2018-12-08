@@ -1,10 +1,12 @@
-package com.zhiyong.xiayibu;
+package com.zhiyong.xiayibu.db;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
+
+import com.zhiyong.xiayibu.db.Word;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 

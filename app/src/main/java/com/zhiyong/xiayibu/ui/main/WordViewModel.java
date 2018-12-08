@@ -1,9 +1,12 @@
-package com.zhiyong.xiayibu;
+package com.zhiyong.xiayibu.ui.main;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
+
+import com.zhiyong.xiayibu.WordRepository;
+import com.zhiyong.xiayibu.db.Word;
 
 import java.util.List;
 
@@ -19,7 +22,7 @@ public class WordViewModel extends AndroidViewModel {
         mAllWords = mRepository.getAllWords();
     }
 
-    LiveData<List<Word>> getAllWords() {
+    public LiveData<List<Word>> getAllWords() {
         return mAllWords;
     }
 
