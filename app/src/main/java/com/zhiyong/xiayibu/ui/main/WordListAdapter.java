@@ -1,6 +1,8 @@
 package com.zhiyong.xiayibu.ui.main;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -37,7 +39,17 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
     public void onBindViewHolder(@NonNull WordListAdapter.WordViewHolder wordViewHolder, int i) {
         if (mWordItems != null) {
             WordItem current = mWordItems.get(i);
-            wordViewHolder.wordItemView.setText(current.getWord());
+            final String word = current.getWord();
+            wordViewHolder.wordItemView.setText(word);
+            wordViewHolder.wordItemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String url = "https://baike.baidu.com/item/" + word;
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(url));
+                    context.startActivity(intent);
+                }
+            });
             wordViewHolder.tvTimeAdded.setText(
                     getDateInstance().format(new Date(current.getTimeAdded()))
             );
