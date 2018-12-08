@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tvWord"
+        android:id="@+id/tvTimeAsked"
         style="@style/text_view_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -17,29 +17,17 @@
         android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="placeholder text" />
+        tools:text="2018-12-31 13:01" />
 
     <TextView
-        android:id="@+id/tvDateAdded"
+        android:id="@+id/tvResponse"
         style="@style/text_view_style"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="2018-12-31" />
-
-    <!--<ImageView-->
-        <!--android:id="@+id/imageView"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:layout_marginEnd="8dp"-->
-        <!--android:layout_marginRight="8dp"-->
-        <!--app:layout_constraintEnd_toEndOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:srcCompat="@drawable/ic_arrow_drop_down_black_48dp" />-->
-
+        tools:text="是" />
 </android.support.constraint.ConstraintLayout>

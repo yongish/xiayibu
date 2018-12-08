@@ -13,6 +13,7 @@ public class Word {
     private String mWord;
 
     // Time added.
+    @NonNull
     private long timestamp;
 
     public Word(@NonNull String mWord, @NonNull long timestamp) {
@@ -20,10 +21,12 @@ public class Word {
         this.timestamp = timestamp;
     }
 
+    @NonNull
     public String getWord() {
         return mWord;
     }
 
+    @NonNull
     public long getTimestamp() {
         return timestamp;
     }

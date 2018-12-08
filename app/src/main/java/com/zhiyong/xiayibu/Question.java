@@ -15,11 +15,14 @@ public class Question {
     @PrimaryKey(autoGenerate = true)
     @NonNull
     private long id;
+    @NonNull
     private long timestamp;
+    @NonNull
     private String word;
-    private boolean correct;
+    @NonNull
+    private int correct;
 
-    public Question(long timestamp, String word, boolean correct) {
+    public Question(@NonNull long timestamp, @NonNull String word, @NonNull int correct) {
         this.timestamp = timestamp;
         this.word = word;
         this.correct = correct;
@@ -34,15 +37,18 @@ public class Question {
         this.id = id;
     }
 
+    @NonNull
     public long getTimestamp() {
         return timestamp;
     }
 
+    @NonNull
     public String getWord() {
         return word;
     }
 
-    public boolean isCorrect() {
+    @NonNull
+    public int getCorrect() {
         return correct;
     }
 }
