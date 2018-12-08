@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.zhiyong.xiayibu.ui.article.ArticleActivity;
 import com.zhiyong.xiayibu.ui.newword.NewWordActivity;
 import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.db.Word;
@@ -100,12 +101,12 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.clear_data) {
-            Toast.makeText(this, "Clearing the data...", Toast.LENGTH_SHORT).show();
+//        if (id == R.id.clear_data) {
+//            Toast.makeText(this, "Clearing the data...", Toast.LENGTH_SHORT).show();
 
-            mWordViewModel.deleteAll();
-            return true;
-        }
+//            mWordViewModel.deleteAll();
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -124,6 +125,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void viewArticles(MenuItem item) {
-
+        startActivity(new Intent(MainActivity.this, ArticleActivity.class));
     }
 }
