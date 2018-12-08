@@ -122,4 +122,8 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), R.string.empty_not_saved, Toast.LENGTH_LONG).show();
         }
     }
+
+    public void viewArticles(MenuItem item) {
+
+    }
 }

@@ -2,9 +2,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.zhiyong.xiayibu.ui.main.MainActivity">
+
     <item
-        android:id="@+id/clear_data"
-        android:orderInCategory="100"
-        android:title="@string/clear_all_data"
-        app:showAsAction="never" />
+        android:id="@+id/view_articles"
+        android:title="@string/all_articles"
+        android:onClick="viewArticles"
+        android:icon="@drawable/ic_view_list_black_24dp"
+        app:showAsAction="always" />
+    <!--<item-->
+        <!--android:id="@+id/clear_data"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="@string/clear_all_data"-->
+        <!--app:showAsAction="never" />-->
 </menu>

@@ -5,6 +5,7 @@
     <string name="button_save">Save</string>
     <string name="empty_not_saved">Word not saved because it is empty.</string>
     <string name="clear_all_data">Clear all data</string>
+    <string name="all_articles">All articles</string>
     <plurals name="article_count">
         <item quantity="one">%1$d article</item>
         <item quantity="other">%1$d articles</item>
