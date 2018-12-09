@@ -38,10 +38,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             Article current = mArticles.get(i);
             articleViewHolder.tvTitle.setText(current.getTitle());
             articleViewHolder.tvAdded.setText(
-                    getDateTimeInstance().format(new Date(current.getTimestamp_added()))
+                    getDateTimeInstance().format(new Date(current.getTimestamp_added())) + "加入"
             );
             articleViewHolder.tvPublished.setText(
-                    getDateTimeInstance().format(new Date(current.getTimestamp_published()))
+                    getDateTimeInstance().format(new Date(current.getTimestamp_published())) + "发表"
             );
         }
     }
@@ -51,6 +51,11 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         if (mArticles != null)
             return mArticles.size();
         else return 0;
+    }
+
+    public void setArticles(List<Article> articles) {
+        mArticles = articles;
+        notifyDataSetChanged();
     }
 
     class ArticleViewHolder extends RecyclerView.ViewHolder {

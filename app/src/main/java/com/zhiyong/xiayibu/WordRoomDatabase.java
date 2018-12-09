@@ -57,7 +57,9 @@ public abstract class WordRoomDatabase extends RoomDatabase {
                 for (int i = 0; i <= words.length - 1; i++) {
                     Word word = new Word(words[i]);
                     mDao.insert(word);
-                    mDao.insert(new Article("url" + i, System.currentTimeMillis(), System.currentTimeMillis() - 1));
+                    mDao.insert(new Article("url" + i, "title" + i,
+                            System.currentTimeMillis() - 1,
+                            System.currentTimeMillis() - 2));
                     mDao.insert(new ArticleWord("url" + i, words[i]));
                 }
             }
