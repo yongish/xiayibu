@@ -9,7 +9,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/tvArticle"
+        android:id="@+id/tvTitle"
         style="@style/text_view_style"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/tvArticle"
+        app:layout_constraintStart_toEndOf="@+id/tvTitle"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="2019-01-02加入" />
 
@@ -56,7 +56,7 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Small"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvArticle"
+        app:layout_constraintStart_toEndOf="@+id/tvTitle"
         app:layout_constraintTop_toBottomOf="@+id/tvAdded"
         tools:text="2019-01-01发表" />
 

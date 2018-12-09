@@ -50,4 +50,6 @@ public interface WordDao {
             "         response")
     LiveData<List<WordItem>> getWordItems();
 
+    @Query("SELECT * FROM article ORDER BY timestamp_added DESC")
+    LiveData<List<Article>> getArticles();
 }

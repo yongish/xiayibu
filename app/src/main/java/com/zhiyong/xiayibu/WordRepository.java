@@ -4,6 +4,7 @@ import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
+import com.zhiyong.xiayibu.db.Article;
 import com.zhiyong.xiayibu.db.Word;
 import com.zhiyong.xiayibu.ui.main.WordItem;
 
@@ -12,15 +13,21 @@ import java.util.List;
 public class WordRepository {
     private WordDao mWordDao;
     private LiveData<List<WordItem>> mWordItems;
+    private LiveData<List<Article>> mArticles;
 
     public WordRepository(Application application) {
         WordRoomDatabase db = WordRoomDatabase.getDatabase(application);
         mWordDao = db.wordDao();
         mWordItems = mWordDao.getWordItems();
+        mArticles = mWordDao.getArticles();
     }
 
     public LiveData<List<WordItem>> getWordItems() {
         return mWordItems;
+    }
+
+    public LiveData<List<Article>> getArticles() {
+        return mArticles;
     }
 
     public void insert(Word word) {
@@ -37,6 +44,24 @@ public class WordRepository {
         @Override
         protected Void doInBackground(Word... words) {
             mAsyncTaskDao.insert(words[0]);
+            return null;
+        }
+    }
+
+    public void insert(Article article) {
+        new insertArticleAsyncTask(mWordDao).execute(article);
+    }
+
+    public static class insertArticleAsyncTask extends AsyncTask<Article, Void, Void> {
+        private WordDao mAsyncTaskDao;
+
+        insertArticleAsyncTask(WordDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(Article... articles) {
+            mAsyncTaskDao.insert(articles[0]);
             return null;
         }
     }
