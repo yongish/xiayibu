@@ -24,4 +24,8 @@ public class ArticleViewModel extends AndroidViewModel {
     LiveData<List<Article>> getAllArticles() {
         return mAllArticles;
     }
+
+    public void deleteArticle(Article article) {
+        mRepository.deleteArticle(article);
+    }
 }

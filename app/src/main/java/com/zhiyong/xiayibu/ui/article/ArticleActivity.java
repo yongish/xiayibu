@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.widget.Toast;
 
 import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.db.Article;
@@ -34,5 +36,30 @@ public class ArticleActivity extends AppCompatActivity {
                 adapter.setArticles(articles);
             }
         });
+
+        ItemTouchHelper helper = new ItemTouchHelper(
+                new ItemTouchHelper.SimpleCallback(0,
+                        ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+                    @Override
+                    public boolean onMove(RecyclerView recyclerView,
+                                          RecyclerView.ViewHolder viewHolder,
+                                          RecyclerView.ViewHolder target) {
+                        return false;
+                    }
+
+                    @Override
+                    public void onSwiped(RecyclerView.ViewHolder viewHolder,
+                                         int direction) {
+                        int position = viewHolder.getAdapterPosition();
+                        Article myArticle = adapter.getArticleAtPosition(position);
+                        Toast.makeText(ArticleActivity.this, "Deleting " +
+                                myArticle.getTitle(), Toast.LENGTH_LONG).show();
+
+                        // Delete the word
+                        mArticleViewModel.deleteArticle(myArticle);
+                    }
+                });
+
+        helper.attachToRecyclerView(recyclerView);
     }
 }

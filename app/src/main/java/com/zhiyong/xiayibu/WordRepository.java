@@ -101,4 +101,22 @@ public class WordRepository {
             return null;
         }
     }
+
+    public void deleteArticle(Article article) {
+        new deleteArticleAsyncTask(mWordDao).execute(article);
+    }
+
+    public static class deleteArticleAsyncTask extends AsyncTask<Article, Void, Void> {
+        private WordDao mAsyncTaskDao;
+
+        deleteArticleAsyncTask(WordDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(Article... articles) {
+            mAsyncTaskDao.deleteArticle(articles[0]);
+            return null;
+        }
+    }
 }

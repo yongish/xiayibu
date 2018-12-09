@@ -58,6 +58,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         notifyDataSetChanged();
     }
 
+    public Article getArticleAtPosition(int position) {
+        return mArticles.get(position);
+    }
+
     class ArticleViewHolder extends RecyclerView.ViewHolder {
         private final TextView tvTitle;
         private final TextView tvAdded;

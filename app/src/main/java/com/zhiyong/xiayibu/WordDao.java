@@ -38,6 +38,9 @@ public interface WordDao {
     @Delete
     void deleteWord(Word word);
 
+    @Delete
+    void deleteArticle(Article article);
+
     @Query("SELECT aw.word,\n" +
             "       MIN(a.timestamp_added) AS timeAdded,\n" +
             "       MAX(q.timestamp) AS timeLastAsked,\n" +
