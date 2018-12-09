@@ -5,25 +5,20 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.zhiyong.xiayibu.ui.article.ArticleActivity;
-import com.zhiyong.xiayibu.ui.newword.NewWordActivity;
 import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.db.Word;
 
 import java.util.List;
-
-import static com.zhiyong.xiayibu.ui.newword.NewWordActivity.NEW_WORD_ACTIVITY_REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,14 +44,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, NewWordActivity.class);
-                startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE);
-            }
-        });
+//        FloatingActionButton fab = findViewById(R.id.fab);
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent intent = new Intent(MainActivity.this, NewWordActivity.class);
+//                startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE);
+//            }
+//        });
 
         // Add the functionality to swipe items in the
         // recycler view to delete that item
@@ -115,13 +110,12 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            // todo: Get timestamp.
-            Word word = new Word(data.getStringExtra(NewWordActivity.EXTRA_REPLY));
-            mWordViewModel.insert(word);
-        } else {
-            Toast.makeText(getApplicationContext(), R.string.empty_not_saved, Toast.LENGTH_LONG).show();
-        }
+//        if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+//            Word word = new Word(data.getStringExtra(NewWordActivity.EXTRA_REPLY));
+//            mWordViewModel.insert(word);
+//        } else {
+//            Toast.makeText(getApplicationContext(), R.string.empty_not_saved, Toast.LENGTH_LONG).show();
+//        }
     }
 
     public void viewArticles(MenuItem item) {

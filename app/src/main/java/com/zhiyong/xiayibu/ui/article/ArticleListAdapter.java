@@ -1,6 +1,8 @@
 package com.zhiyong.xiayibu.ui.article;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -18,11 +20,13 @@ import static java.text.DateFormat.*;
 
 public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.ArticleViewHolder> {
 
+    private Context context;
     private final LayoutInflater mInflater;
     private List<Article> mArticles;
 
     ArticleListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
+        this.context = context;
     }
 
     @NonNull
@@ -35,8 +39,16 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
     @Override
     public void onBindViewHolder(@NonNull ArticleViewHolder articleViewHolder, int i) {
         if (mArticles != null) {
-            Article current = mArticles.get(i);
+            final Article current = mArticles.get(i);
             articleViewHolder.tvTitle.setText(current.getTitle());
+            articleViewHolder.tvTitle.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse(current.getUrl()));
+                    context.startActivity(intent);
+                }
+            });
             articleViewHolder.tvAdded.setText(
                     getDateTimeInstance().format(new Date(current.getTimestamp_added())) + "加入"
             );

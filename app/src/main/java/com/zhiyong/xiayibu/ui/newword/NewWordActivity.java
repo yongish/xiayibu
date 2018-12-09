@@ -1,3 +1,6 @@
+/**
+ * This class is not used.
+ */
 package com.zhiyong.xiayibu.ui.newword;
 
 import android.content.Intent;
