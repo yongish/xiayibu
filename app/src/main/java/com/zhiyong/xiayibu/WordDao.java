@@ -54,5 +54,14 @@ public interface WordDao {
     LiveData<List<WordItem>> getWordItems();
 
     @Query("SELECT * FROM article ORDER BY timestamp_added DESC")
-    LiveData<List<Article>> getArticles();
+    LiveData<List<Article>> getAllArticles();
+
+    @Query("SELECT title,\n" +
+            "       a.url,\n" +
+            "       timestamp_added,\n" +
+            "       timestamp_published\n" +
+            "FROM article a\n" +
+            "JOIN article_word aw ON a.url = aw.url\n" +
+            "WHERE word = :word")
+    LiveData<List<Article>> getArticles(String word);
 }

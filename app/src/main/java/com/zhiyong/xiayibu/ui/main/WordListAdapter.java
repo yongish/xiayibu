@@ -1,8 +1,8 @@
 package com.zhiyong.xiayibu.ui.main;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.zhiyong.xiayibu.R;
+import com.zhiyong.xiayibu.ui.article.ArticleActivity;
 
 import java.util.Date;
 import java.util.List;
@@ -20,8 +21,11 @@ import static java.text.DateFormat.*;
 
 public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
 
-    private Context context;
+    public static final String EXTRA_WORD = "com.zhiyong.xiayibu.ui.main.extra.WORD";
+
     private final LayoutInflater mInflater;
+
+    private Context context;
     private List<WordItem> mWordItems;
 
     public WordListAdapter(Context context) {
@@ -59,7 +63,14 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                     context.getResources().getQuantityString(
                             R.plurals.article_count, articleCount
                     ), articleCount));
-            
+            wordViewHolder.tvArticleCount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ArticleActivity.class);
+                    intent.putExtra(EXTRA_WORD, word);
+                    context.startActivity(intent);
+                }
+            });
             wordViewHolder.tvLastAskedResponse.setText(String.format("%s at %s",
                     responseString(current.getLastAskedResponse()),
                     getDateTimeInstance(MEDIUM, SHORT).format(new Date(current.getTimeLastAsked()))

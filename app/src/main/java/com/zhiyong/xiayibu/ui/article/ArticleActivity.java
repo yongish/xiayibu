@@ -15,6 +15,8 @@ import com.zhiyong.xiayibu.db.Article;
 
 import java.util.List;
 
+import static com.zhiyong.xiayibu.ui.main.WordListAdapter.EXTRA_WORD;
+
 public class ArticleActivity extends AppCompatActivity {
 
     private ArticleViewModel mArticleViewModel;
@@ -24,18 +26,31 @@ public class ArticleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_article);
 
+        final String word = getIntent().getStringExtra(EXTRA_WORD);
+
         RecyclerView recyclerView = findViewById(R.id.recyclerview_article);
         final ArticleListAdapter adapter = new ArticleListAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mArticleViewModel = ViewModelProviders.of(this).get(ArticleViewModel.class);
-        mArticleViewModel.getAllArticles().observe(this, new Observer<List<Article>>() {
-            @Override
-            public void onChanged(@Nullable List<Article> articles) {
-                adapter.setArticles(articles);
-            }
-        });
+        mArticleViewModel = ViewModelProviders
+                .of(this, new ArticleViewModelFactory(this.getApplication(), word))
+                .get(ArticleViewModel.class);
+        if (word == null) {
+            mArticleViewModel.getAllArticles().observe(this, new Observer<List<Article>>() {
+                @Override
+                public void onChanged(@Nullable List<Article> articles) {
+                    adapter.setArticles(articles);
+                }
+            });
+        } else {
+            mArticleViewModel.getArticlesOfWord().observe(this, new Observer<List<Article>>() {
+                @Override
+                public void onChanged(@Nullable List<Article> articles) {
+                    adapter.setArticles(articles);
+                }
+            });
+        }
 
         ItemTouchHelper helper = new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(0,

@@ -14,15 +14,21 @@ public class ArticleViewModel extends AndroidViewModel {
 
     private WordRepository mRepository;
     private LiveData<List<Article>> mAllArticles;
+    private LiveData<List<Article>> mArticles;
 
-    public ArticleViewModel(@NonNull Application application) {
+    public ArticleViewModel(@NonNull Application application, String word) {
         super(application);
-        mRepository = new WordRepository(application);
-        mAllArticles = mRepository.getArticles();
+        mRepository = new WordRepository(application, word);
+        mAllArticles = mRepository.getAllArticles();
+        mArticles = mRepository.getArticlesOfWord();
     }
 
     LiveData<List<Article>> getAllArticles() {
         return mAllArticles;
+    }
+
+    LiveData<List<Article>> getArticlesOfWord() {
+        return mArticles;
     }
 
     public void deleteArticle(Article article) {

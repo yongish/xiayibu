@@ -13,20 +13,26 @@ import java.util.List;
 public class WordRepository {
     private WordDao mWordDao;
     private LiveData<List<WordItem>> mWordItems;
+    private LiveData<List<Article>> mAllArticles;
     private LiveData<List<Article>> mArticles;
 
-    public WordRepository(Application application) {
+    public WordRepository(Application application, String word) {
         WordRoomDatabase db = WordRoomDatabase.getDatabase(application);
         mWordDao = db.wordDao();
         mWordItems = mWordDao.getWordItems();
-        mArticles = mWordDao.getArticles();
+        mAllArticles = mWordDao.getAllArticles();
+        mArticles = mWordDao.getArticles(word);
     }
 
     public LiveData<List<WordItem>> getWordItems() {
         return mWordItems;
     }
 
-    public LiveData<List<Article>> getArticles() {
+    public LiveData<List<Article>> getAllArticles() {
+        return mAllArticles;
+    }
+
+    public LiveData<List<Article>> getArticlesOfWord() {
         return mArticles;
     }
 
