@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import com.zhiyong.xiayibu.db.Article;
 import com.zhiyong.xiayibu.db.Word;
 import com.zhiyong.xiayibu.ui.main.WordItem;
+import com.zhiyong.xiayibu.ui.question.YesNoWord;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class WordRepository {
     private LiveData<List<WordItem>> mWordItems;
     private LiveData<List<Article>> mAllArticles;
     private LiveData<List<Article>> mArticles;
+    private LiveData<List<YesNoWord>> mYesNoWords;
 
     public WordRepository(Application application, String word) {
         WordRoomDatabase db = WordRoomDatabase.getDatabase(application);
@@ -22,10 +24,15 @@ public class WordRepository {
         mWordItems = mWordDao.getWordItems();
         mAllArticles = mWordDao.getAllArticles();
         mArticles = mWordDao.getArticles(word);
+        mYesNoWords = mWordDao.getYesNoWords();
     }
 
     public LiveData<List<WordItem>> getWordItems() {
         return mWordItems;
+    }
+
+    public LiveData<List<YesNoWord>> getYesNoWords() {
+        return mYesNoWords;
     }
 
     public LiveData<List<Article>> getAllArticles() {

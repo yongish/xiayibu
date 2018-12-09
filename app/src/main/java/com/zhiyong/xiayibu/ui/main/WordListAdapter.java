@@ -17,6 +17,7 @@ import com.zhiyong.xiayibu.ui.article.ArticleActivity;
 import java.util.Date;
 import java.util.List;
 
+import static com.zhiyong.xiayibu.Util.responseString;
 import static java.text.DateFormat.*;
 
 public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
@@ -76,19 +77,6 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                     getDateTimeInstance(MEDIUM, SHORT).format(new Date(current.getTimeLastAsked()))
             ));
         }
-    }
-
-    private String responseString(int response) {
-        if (response == 0) {
-            return "Yes";
-        }
-        if (response == 1) {
-            return "No";
-        }
-        if (response == 2) {
-            return "Never";
-        }
-        throw new IllegalArgumentException("Invalid response number.");
     }
 
     public void setWordItems(List<WordItem> wordItems) {

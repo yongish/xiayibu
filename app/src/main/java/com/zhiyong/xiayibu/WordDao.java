@@ -10,6 +10,7 @@ import com.zhiyong.xiayibu.db.Article;
 import com.zhiyong.xiayibu.db.ArticleWord;
 import com.zhiyong.xiayibu.db.Word;
 import com.zhiyong.xiayibu.ui.main.WordItem;
+import com.zhiyong.xiayibu.ui.question.YesNoWord;
 
 import java.util.List;
 
@@ -52,6 +53,14 @@ public interface WordDao {
             "GROUP BY aw.word,\n" +
             "         response")
     LiveData<List<WordItem>> getWordItems();
+
+    @Query("SELECT word,\n" +
+            "       Max(TIMESTAMP) AS lastTimestamp,\n" +
+            "       response AS lastResponse\n" +
+            "FROM question\n" +
+            "WHERE response != 2\n" +
+            "GROUP BY word")
+    LiveData<List<YesNoWord>> getYesNoWords();
 
     @Query("SELECT * FROM article ORDER BY timestamp_added DESC")
     LiveData<List<Article>> getAllArticles();

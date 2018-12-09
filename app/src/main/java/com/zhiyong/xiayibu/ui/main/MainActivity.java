@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.zhiyong.xiayibu.ui.article.ArticleActivity;
 import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.db.Word;
+import com.zhiyong.xiayibu.ui.question.QuestionActivity;
 
 import java.util.List;
 
@@ -50,11 +51,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // todo: Start quiz.
-
-                // todo: remove
-//                Intent intent = new Intent(MainActivity.this, NewWordActivity.class);
-//                startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE);
+                startActivity(new Intent(MainActivity.this, QuestionActivity.class));
             }
         });
 

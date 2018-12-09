@@ -7,6 +7,10 @@
     <string name="clear_all_data">Clear all data</string>
     <string name="all_articles">All articles</string>
     <string name="articles">Articles</string>
+    <string name="question">Know this word?</string>
+    <string name="never">Don\'t show again</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
     <plurals name="article_count">
         <item quantity="one">%1$d article</item>
         <item quantity="other">%1$d articles</item>

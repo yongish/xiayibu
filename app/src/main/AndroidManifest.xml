@@ -20,9 +20,18 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.newword.NewWordActivity" />
-        <activity android:name=".ui.article.ArticleActivity"
+        <activity
+            android:name=".ui.article.ArticleActivity"
             android:label="@string/articles">
-            <meta-data android:name="android.support.PARENT_ACTIVITY"
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.main.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ui.question.QuestionActivity"
+            android:label="@string/question">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.main.MainActivity" />
         </activity>
     </application>
