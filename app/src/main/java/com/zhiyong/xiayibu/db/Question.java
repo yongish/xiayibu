@@ -51,4 +51,29 @@ public class Question {
     public int getResponse() {
         return response;
     }
+
+    public static class QuestionBuilder {
+        private long nestedTimestamp;
+        private String nestedWord;
+        private int nestedResponse;
+
+        public QuestionBuilder timestamp(long timestamp) {
+            nestedTimestamp = timestamp;
+            return this;
+        }
+
+        public QuestionBuilder word(String word) {
+            nestedWord = word;
+            return this;
+        }
+
+        public QuestionBuilder response(int response) {
+            nestedResponse = response;
+            return this;
+        }
+
+        public Question build() {
+            return new Question(nestedTimestamp, nestedWord, nestedResponse);
+        }
+    }
 }

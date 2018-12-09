@@ -8,6 +8,7 @@ import android.arch.persistence.room.Query;
 
 import com.zhiyong.xiayibu.db.Article;
 import com.zhiyong.xiayibu.db.ArticleWord;
+import com.zhiyong.xiayibu.db.Question;
 import com.zhiyong.xiayibu.db.Word;
 import com.zhiyong.xiayibu.ui.main.WordItem;
 import com.zhiyong.xiayibu.ui.question.YesNoWord;
@@ -26,6 +27,9 @@ public interface WordDao {
 
     @Insert
     void insert(ArticleWord articleWord);
+
+    @Insert
+    void insert(Question question);
 
     @Query("DELETE FROM word_table")
     void deleteAll();

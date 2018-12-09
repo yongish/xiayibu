@@ -2,6 +2,7 @@ package com.zhiyong.xiayibu.ui.question;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.zhiyong.xiayibu.Util.responseInt;
 import static com.zhiyong.xiayibu.Util.responseString;
 
 public class QuestionActivity extends AppCompatActivity {
@@ -74,14 +76,31 @@ public class QuestionActivity extends AppCompatActivity {
                     chosenWord = yesWords.get(rand.nextInt(yesWords.size()));
                 }
                 tvWord.setText(chosenWord);
+
+                final Question.QuestionBuilder questionBuilder = new Question.QuestionBuilder()
+                        .timestamp(System.currentTimeMillis())
+                        .word(chosenWord);
                 btnYes.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        // Insert question.
+                        mQuestionViewModel.insert(questionBuilder.response(responseInt("Yes")).build());
+                        startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
                     }
                 });
-
-
+                btnNo.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mQuestionViewModel.insert(questionBuilder.response(responseInt("No")).build());
+                        startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
+                    }
+                });
+                btnNever.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mQuestionViewModel.insert(questionBuilder.response(responseInt("Never")).build());
+                        startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
+                    }
+                });
             }
         });
     }
