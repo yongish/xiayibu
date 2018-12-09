@@ -2,6 +2,7 @@ package com.zhiyong.xiayibu.ui.main;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -58,6 +59,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                     context.getResources().getQuantityString(
                             R.plurals.article_count, articleCount
                     ), articleCount));
+            
             wordViewHolder.tvLastAskedResponse.setText(String.format("%s at %s",
                     responseString(current.getLastAskedResponse()),
                     getDateTimeInstance(MEDIUM, SHORT).format(new Date(current.getTimeLastAsked()))

@@ -13,6 +13,7 @@
         android:id="@+id/tvWord"
         style="@style/text_view_style"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
+        android:textColor="@android:color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -36,6 +37,7 @@
     <TextView
         android:id="@+id/tvArticleCount"
         style="@style/text_view_style"
+        android:textColor="@android:color/black"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
