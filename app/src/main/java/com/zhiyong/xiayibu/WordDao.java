@@ -50,7 +50,7 @@ public interface WordDao {
             "       MIN(a.timestamp_added) AS timeAdded,\n" +
             "       MAX(q.timestamp) AS timeLastAsked,\n" +
             "       response AS lastAskedResponse,\n" +
-            "       COUNT(a.url) AS articleCount\n" +
+            "       COUNT(DISTINCT a.url) AS articleCount\n" +
             "FROM article_word aw\n" +
             "JOIN article a ON aw.url = a.url\n" +
             "LEFT JOIN question q ON aw.word = q.word\n" +
