@@ -14,11 +14,9 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import com.zhiyong.xiayibu.ui.article.ArticleActivity;
 import com.zhiyong.xiayibu.R;
-import com.zhiyong.xiayibu.db.Word;
 import com.zhiyong.xiayibu.ui.question.QuestionActivity;
 import com.zhiyong.xiayibu.ui.question.QuestionViewModel;
 
@@ -35,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerview);
+        final RecyclerView recyclerView = findViewById(R.id.recyclerview);
         final WordListAdapter adapter = new WordListAdapter(this, ViewModelProviders.of(this).get(QuestionViewModel.class));
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -71,13 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder,
                                          int direction) {
-                        int position = viewHolder.getAdapterPosition();
-                        WordItem myWord = adapter.getWordAtPosition(position);
-                        Toast.makeText(MainActivity.this, "Deleting " +
-                                myWord.getWord(), Toast.LENGTH_LONG).show();
-
-                        // Delete the word
-                        mWordViewModel.deleteWord(new Word(myWord.getWord()));
+                        adapter.onItemRemove(viewHolder, recyclerView, mWordViewModel);
                     }
                 });
 
