@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.widget.Toast;
 
 import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.db.Article;
@@ -28,7 +27,7 @@ public class ArticleActivity extends AppCompatActivity {
 
         final String word = getIntent().getStringExtra(EXTRA_WORD);
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerview_article);
+        final RecyclerView recyclerView = findViewById(R.id.recyclerview_article);
         final ArticleListAdapter adapter = new ArticleListAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -65,13 +64,7 @@ public class ArticleActivity extends AppCompatActivity {
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder,
                                          int direction) {
-                        int position = viewHolder.getAdapterPosition();
-                        Article myArticle = adapter.getArticleAtPosition(position);
-                        Toast.makeText(ArticleActivity.this, "Deleting " +
-                                myArticle.getTitle(), Toast.LENGTH_LONG).show();
-
-                        // Delete the word
-                        mArticleViewModel.deleteArticle(myArticle);
+                        adapter.onItemRemove(viewHolder, recyclerView, mArticleViewModel);
                     }
                 });
 

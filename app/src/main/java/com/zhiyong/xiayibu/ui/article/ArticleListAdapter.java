@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +73,29 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
     public Article getArticleAtPosition(int position) {
         return mArticles.get(position);
+    }
+
+    void onItemRemove(final RecyclerView.ViewHolder viewHolder,
+                      final RecyclerView mRecyclerView,
+                      final ArticleViewModel viewModel) {
+        final int adapterPosition = viewHolder.getAdapterPosition();
+        final Article article = mArticles.get(adapterPosition);
+
+        Snackbar snackbar = Snackbar
+                .make(mRecyclerView, "Removed article", Snackbar.LENGTH_LONG)
+                .setAction("Undo", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mArticles.add(adapterPosition, article);
+                        notifyItemInserted(adapterPosition);
+                        viewModel.insert(article);
+                        mRecyclerView.scrollToPosition(adapterPosition);
+                    }
+                });
+        snackbar.show();
+        mArticles.remove(adapterPosition);
+        viewModel.deleteArticle(article);
+        notifyItemRemoved(adapterPosition);
     }
 
     class ArticleViewHolder extends RecyclerView.ViewHolder {

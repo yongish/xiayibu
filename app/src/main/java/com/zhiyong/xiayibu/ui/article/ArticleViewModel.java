@@ -31,6 +31,10 @@ public class ArticleViewModel extends AndroidViewModel {
         return mArticles;
     }
 
+    public void insert(Article article) {
+        mRepository.insert(article);
+    }
+
     public void deleteArticle(Article article) {
         mRepository.deleteArticle(article);
     }
