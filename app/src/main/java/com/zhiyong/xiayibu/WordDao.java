@@ -54,7 +54,8 @@ public interface WordDao {
             "FROM article_word aw\n" +
             "JOIN article a ON aw.url = a.url\n" +
             "LEFT JOIN question q ON aw.word = q.word\n" +
-            "GROUP BY aw.word")
+            "GROUP BY aw.word\n" +
+            "ORDER BY aw.word")
     LiveData<List<WordItem>> getWordItems();
 
     @Query("SELECT tmp.word,\n" +
