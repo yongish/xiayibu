@@ -24,7 +24,7 @@ public class QuestionViewModel extends AndroidViewModel {
         return mYesNoWords;
     }
 
-    void insert(Question question) {
+    public void insert(Question question) {
         mRepository.insert(question);
     }
 }

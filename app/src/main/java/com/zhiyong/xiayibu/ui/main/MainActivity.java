@@ -20,6 +20,7 @@ import com.zhiyong.xiayibu.ui.article.ArticleActivity;
 import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.db.Word;
 import com.zhiyong.xiayibu.ui.question.QuestionActivity;
+import com.zhiyong.xiayibu.ui.question.QuestionViewModel;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
-        final WordListAdapter adapter = new WordListAdapter(this);
+        final WordListAdapter adapter = new WordListAdapter(this, ViewModelProviders.of(this).get(QuestionViewModel.class));
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 

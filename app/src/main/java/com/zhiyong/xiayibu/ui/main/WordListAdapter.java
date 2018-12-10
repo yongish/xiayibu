@@ -1,22 +1,29 @@
 package com.zhiyong.xiayibu.ui.main;
 
-import android.app.Activity;
+import android.app.AlertDialog;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zhiyong.xiayibu.R;
+import com.zhiyong.xiayibu.db.Question;
 import com.zhiyong.xiayibu.ui.article.ArticleActivity;
+import com.zhiyong.xiayibu.ui.question.QuestionViewModel;
 
 import java.util.Date;
 import java.util.List;
 
+import static com.zhiyong.xiayibu.Util.responseInt;
 import static com.zhiyong.xiayibu.Util.responseString;
 import static java.text.DateFormat.*;
 
@@ -28,10 +35,12 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
 
     private Context context;
     private List<WordItem> mWordItems;
+    private QuestionViewModel mQuestionViewModel;
 
-    public WordListAdapter(Context context) {
+    public WordListAdapter(Context context, QuestionViewModel questionViewModel) {
         mInflater = LayoutInflater.from(context);
         this.context = context;
+        mQuestionViewModel = questionViewModel;
     }
 
     @NonNull
@@ -42,7 +51,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull WordListAdapter.WordViewHolder wordViewHolder, int i) {
+    public void onBindViewHolder(@NonNull final WordListAdapter.WordViewHolder wordViewHolder, int i) {
         if (mWordItems != null) {
             WordItem current = mWordItems.get(i);
             final String word = current.getWord();
@@ -76,6 +85,34 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                     responseString(current.getLastAskedResponse()),
                     getDateTimeInstance(MEDIUM, SHORT).format(new Date(current.getTimeLastAsked()))
             ));
+            wordViewHolder.tvLastAskedResponse.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final String[] grpname = new String[]{"Yes", "No", "Don't show again"};
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Change response")
+                            .setSingleChoiceItems(grpname, -1,
+                                    new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    long timestamp = System.currentTimeMillis();
+                                    mQuestionViewModel.insert(new Question(
+                                            timestamp,
+                                            word,
+                                            responseInt(grpname[which])
+                                    ));
+                                    wordViewHolder.tvLastAskedResponse.setText(String.format("%s at %s",
+                                            grpname[which],
+                                            getDateTimeInstance(MEDIUM, SHORT).format(new Date(timestamp))
+                                    ));
+                                    notifyDataSetChanged();
+
+                                    dialog.dismiss();
+                                }
+                            });
+                    builder.create().show();
+                }
+            });
         }
     }
 
