@@ -51,10 +51,16 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
                 }
             });
             articleViewHolder.tvAdded.setText(
-                    getDateTimeInstance().format(new Date(current.getTimestamp_added())) + "加入"
+                    String.format(
+                            context.getResources().getString(R.string.added),
+                            getDateTimeInstance().format(new Date(current.getTimestamp_added()))
+                    )
             );
             articleViewHolder.tvPublished.setText(
-                    getDateTimeInstance().format(new Date(current.getTimestamp_published())) + "发表"
+                    String.format(
+                            context.getResources().getString(R.string.published),
+                            getDateTimeInstance().format(new Date(current.getTimestamp_added()))
+                    )
             );
         }
     }
