@@ -15,6 +15,7 @@ import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.Response;
 import com.zhiyong.xiayibu.db.Question;
 import com.zhiyong.xiayibu.db.Word;
+import com.zhiyong.xiayibu.ui.main.MainActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,7 @@ public class QuestionActivity extends AppCompatActivity {
                             "You either have no words or marked all as \"Don't show again.\"",
                             Toast.LENGTH_LONG
                     ).show();
+                    startActivity(new Intent(QuestionActivity.this, MainActivity.class));
                     return;
                 }
 

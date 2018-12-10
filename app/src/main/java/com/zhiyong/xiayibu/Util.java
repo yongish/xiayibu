@@ -9,6 +9,7 @@ public class Util {
             case "no":
                 return 1;
             case "never":
+            case "don't show again":
                 return 2;
         }
         throw new IllegalArgumentException("Invalid response string.");

@@ -54,16 +54,22 @@ public interface WordDao {
             "FROM article_word aw\n" +
             "JOIN article a ON aw.url = a.url\n" +
             "LEFT JOIN question q ON aw.word = q.word\n" +
-            "GROUP BY aw.word,\n" +
-            "         response")
+            "GROUP BY aw.word")
     LiveData<List<WordItem>> getWordItems();
 
-    @Query("SELECT word,\n" +
-            "       Max(TIMESTAMP) AS lastTimestamp,\n" +
+    @Query("SELECT tmp.word,\n" +
+            "       lastTimestamp,\n" +
             "       response AS lastResponse\n" +
-            "FROM question\n" +
+            "FROM\n" +
+            "  (SELECT w.word,\n" +
+            "          Max(timestamp) AS lastTimestamp\n" +
+            "   FROM word_table w\n" +
+            "   LEFT JOIN question q ON w.word = q.word\n" +
+            "   GROUP BY w.word) tmp\n" +
+            "JOIN question q1 ON tmp.word = q1.word\n" +
+            "AND tmp.lastTimestamp = q1.timestamp\n" +
             "WHERE response != 2\n" +
-            "GROUP BY word")
+            "  OR response IS NULL")
     LiveData<List<YesNoWord>> getYesNoWords();
 
     @Query("SELECT * FROM article ORDER BY timestamp_added DESC")
