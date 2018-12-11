@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
     public static final String BAIDU_DICT_URL_PREPEND = "https://dict.baidu.com/s?wd=";
@@ -157,8 +158,9 @@ public class MainActivity extends AppCompatActivity {
      */
     private void processSegment(String segment) {
         Document dictDoc = null;
+        String initialUrl = BAIDU_DICT_URL_PREPEND + segment;
         try {
-            dictDoc = Jsoup.connect(BAIDU_DICT_URL_PREPEND + segment).get();
+            dictDoc = Jsoup.connect(initialUrl).get();
         } catch (IOException e) {
             Log.e("URL ISSUE", "processSegment: " + e.getMessage());
         }
@@ -173,9 +175,52 @@ public class MainActivity extends AppCompatActivity {
             if (end == -1) {
                 end = href.length();
             }
+            int hrefLength = href.substring(start + 1, end).length();
+            if (hrefLength - segment.length() > 1) {
+                splitThenProcess(segment);
+            }
 
-
+            try {
+                dictDoc = Jsoup.connect(BAIDU_DICT_URL_PREPEND + href).get();
+            } catch (IOException e) {
+                Log.e("URL ISSUE HREF", "processSegment: " + e.getMessage());
+            }
+            pinyinWrapper = dictDoc.getElementById("pinyin");
         }
+        if (pinyinWrapper == null) {
+            splitThenProcess(segment);
+        }
+        WordDefinition.WordDefinitionBuilder builder = new WordDefinition.WordDefinitionBuilder();
+        String pinyin = pinyinWrapper.selectFirst("b").text()
+                .replace("[", "").replace("]", "").trim();
+
+        Element basicWrapper = dictDoc.getElementById("basicmean-wrapper");
+        WordDefinition definition = null;
+        if (basicWrapper == null) {
+            Element baikeWrapper = dictDoc.getElementById("baike-wrapper");
+            if (baikeWrapper == null) {
+
+            } else {
+                definition = builder.pinyin(pinyin).baikePreview(initialUrl).build();
+            }
+        }
+        String chineseExplain = basicWrapper.child(1).text().trim();
+        int start = chineseExplain.indexOf("]");
+        if (start != -1) {
+            chineseExplain = chineseExplain.substring(start + 1).trim();
+        }
+        String engExplain = dictDoc.getElementById("fanyi-wrapper").child(1).text().trim();
+        definition = builder
+                .pinyin(pinyin)
+                .chineseExplain(chineseExplain)
+                .englishExplain(engExplain)
+                .build();
+
+        // Insert WordDefinition to DB.
+    }
+
+    private void splitThenProcess(String segment) {
+        segment.chars().mapToObj(String::valueOf).collect(Collectors.toSet()).forEach(this::processSegment);
     }
 
     /**

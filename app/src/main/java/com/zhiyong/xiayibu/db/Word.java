@@ -12,6 +12,12 @@ public class Word {
     @ColumnInfo(name = "word")
     private String mWord;
 
+    private String chinese_explain;
+
+    private String english_explain;
+
+
+
     public Word(@NonNull String mWord) {
         this.mWord = mWord;
     }
