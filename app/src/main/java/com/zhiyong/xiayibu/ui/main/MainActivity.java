@@ -11,20 +11,31 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.huaban.analysis.jieba.JiebaSegmenter;
 import com.zhiyong.xiayibu.ui.article.ArticleActivity;
 import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.ui.question.QuestionActivity;
 import com.zhiyong.xiayibu.ui.question.QuestionViewModel;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String BAIDU_DICT_URL_PREPEND = "https://dict.baidu.com/s?wd=";
 
     private WordViewModel mWordViewModel;
+    private final JiebaSegmenter segmenter = new JiebaSegmenter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,8 +47,7 @@ public class MainActivity extends AppCompatActivity {
         String type = intent.getType();
         if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
             String url = intent.getStringExtra(Intent.EXTRA_TEXT);
-            // Parse article.
-
+            processArticle(url);
         }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -125,5 +135,71 @@ public class MainActivity extends AppCompatActivity {
 
     public void viewArticles(MenuItem item) {
         startActivity(new Intent(MainActivity.this, ArticleActivity.class));
+    }
+
+    /**
+     * Parse article with Jieba and insert words to DB.
+     * This function should be in separate utility class, but just keeping it here since it is not
+     * used anywhere else.
+     * @param url
+     */
+    private void processArticle(String url) {
+        String text = extractSinaText(url);
+        Set<String> segments = new HashSet<>(segmenter.sentenceProcess(text));
+        segments.stream()
+                .filter(segment -> Character.UnicodeScript.of(segment.charAt(0)) == Character.UnicodeScript.HAN)
+                .forEach(this::processSegment);
+    }
+
+    /**
+     * Uses Baidu dict. May need to change with changes in Baidu dict HTML format.
+     * @param segment
+     */
+    private void processSegment(String segment) {
+        Document dictDoc = null;
+        try {
+            dictDoc = Jsoup.connect(BAIDU_DICT_URL_PREPEND + segment).get();
+        } catch (IOException e) {
+            Log.e("URL ISSUE", "processSegment: " + e.getMessage());
+        }
+
+        // May be a multiple-choice page. If so, select 1st choice.
+        Element pinyinWrapper = dictDoc.getElementById("pinyin");
+        if (pinyinWrapper == null && !dictDoc.text().contains("百度汉语中没有收录")) {
+            String href = dictDoc.getElementById("data-container").selectFirst("a").attr("href");
+            // Regard 1st choice as irrelevant if it is >1 character longer than the segment.
+            int start = href.indexOf("=");
+            int end = href.indexOf("&");
+            if (end == -1) {
+                end = href.length();
+            }
+
+
+        }
+    }
+
+    /**
+     * Return text from Sina article. HTML format may change in future, so may need to update this
+     * function.
+     * @param url
+     * @return
+     */
+    private String extractSinaText(String url) {
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            Log.e("URL ISSUE", "processArticle: " + e.getMessage());
+        }
+        Element textElement = doc.getElementById("artibody");
+        if (textElement == null) {
+            textElement = doc.getElementById("article");
+        }
+        if (textElement == null) {
+            Log.e("HTMLCHANGED", "");
+        }
+
+        String text = textElement.text();
+        return text;
     }
 }

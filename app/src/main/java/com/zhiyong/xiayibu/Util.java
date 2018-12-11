@@ -1,6 +1,7 @@
 package com.zhiyong.xiayibu;
 
 public class Util {
+
     public static int responseInt(String response) {
         response = response.trim().toLowerCase();
         switch (response) {
