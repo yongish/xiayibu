@@ -6,15 +6,12 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhiyong.xiayibu.R;
-import com.zhiyong.xiayibu.Response;
 import com.zhiyong.xiayibu.db.Question;
-import com.zhiyong.xiayibu.db.Word;
 import com.zhiyong.xiayibu.ui.main.MainActivity;
 
 import java.util.ArrayList;
@@ -82,26 +79,17 @@ public class QuestionActivity extends AppCompatActivity {
                 final Question.QuestionBuilder questionBuilder = new Question.QuestionBuilder()
                         .timestamp(System.currentTimeMillis())
                         .word(chosenWord);
-                btnYes.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mQuestionViewModel.insert(questionBuilder.response(responseInt("Yes")).build());
-                        startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
-                    }
+                btnYes.setOnClickListener(v -> {
+                    mQuestionViewModel.insert(questionBuilder.response(responseInt("Yes")).build());
+//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
                 });
-                btnNo.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mQuestionViewModel.insert(questionBuilder.response(responseInt("No")).build());
-                        startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
-                    }
+                btnNo.setOnClickListener(v -> {
+                    mQuestionViewModel.insert(questionBuilder.response(responseInt("No")).build());
+//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
                 });
-                btnNever.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mQuestionViewModel.insert(questionBuilder.response(responseInt("Never")).build());
-                        startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
-                    }
+                btnNever.setOnClickListener(v -> {
+                    mQuestionViewModel.insert(questionBuilder.response(responseInt("Never")).build());
+//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
                 });
             }
         });

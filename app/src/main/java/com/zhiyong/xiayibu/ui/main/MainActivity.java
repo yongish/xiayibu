@@ -73,9 +73,7 @@ public class MainActivity extends AppCompatActivity {
         String type = intent.getType();
         if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
             String url = intent.getStringExtra(Intent.EXTRA_TEXT);
-
-
-            url = "https://news.sina.cn/gn/2018-11-19/detail-ihnyuqhi3254063.d.html";
+//            url = "https://news.sina.cn/gn/2018-11-19/detail-ihnyuqhi3254063.d.html";
             processArticle(url);
         }
 
@@ -161,13 +159,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e("URL ISSUE", "processArticle: " + e.getMessage());
         }
-//        String title = doc.getElementsByClass("title").get(0).text();
         String title = doc.select("title").get(0).childNodes().get(0).toString();
 
-//        String chineseDate = doc.getElementsByClass("date").get(0).text();
         String chineseDate = doc.select("meta[property=article:published_time]").get(0).attr("content");
 
-//        DateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long timestamp_published = 0;
         try {
@@ -190,22 +185,9 @@ public class MainActivity extends AppCompatActivity {
         String text = extractSinaText(doc);
         Set<String> segments = new HashSet<>(segmenter.sentenceProcess(text));
 
-        // todo: delete;
-        int i = 0;
-        for (String segment : segments) {
-            if (i > 1) {
-                break;
-            }
-            i++;
-
-            if (Character.UnicodeScript.of(segment.charAt(0)) == Character.UnicodeScript.HAN) {
-                processSegment(segment, url);
-            }
-        }
-
-//        segments.stream()
-//                .filter(segment -> Character.UnicodeScript.of(segment.charAt(0)) == Character.UnicodeScript.HAN)
-//                .forEach(this::processSegment);
+        segments.stream()
+                .filter(segment -> Character.UnicodeScript.of(segment.charAt(0)) == Character.UnicodeScript.HAN)
+                .forEach(x -> processSegment(x, url));
     }
 
     /**
@@ -224,13 +206,12 @@ public class MainActivity extends AppCompatActivity {
         Element pinyinWrapper = dictDoc.getElementById("pinyin");
         if (pinyinWrapper == null && !dictDoc.text().contains("没有收录")) {
 
-            // todo: delete
-            if (dictDoc.getElementById("data-container") == null) {
-                System.out.println(segment);
-                System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
+            Element dataContainer = dictDoc.getElementById("data-container");
+            if (dataContainer == null) {
+                splitThenProcess(segment, url);
+                return;
             }
-
-            String href = dictDoc.getElementById("data-container").selectFirst("a").attr("href");
+            String href = dataContainer.selectFirst("a").attr("href");
             // Regard 1st choice as irrelevant if it is >1 character longer than the segment.
             int start = href.indexOf("=");
             int end = href.indexOf("&");
@@ -275,14 +256,11 @@ public class MainActivity extends AppCompatActivity {
             mWordViewModel.insert(word);
             return;
         }
-//        String chineseExplain = basicWrapper.child(1).text().trim();
-        System.out.println(segment);
         String chineseExplain = basicWrapper.select("dd").text();
         int start = chineseExplain.indexOf("]");
         if (start != -1) {
             chineseExplain = chineseExplain.substring(start + 1).trim();
         }
-//        String engExplain = dictDoc.getElementById("fanyi-wrapper").child(1).text().trim();
         String engExplain = dictDoc.getElementById("fanyi-wrapper").getElementsByClass("tab-content").text();
         word = builder
                 .word(segment)
@@ -291,10 +269,8 @@ public class MainActivity extends AppCompatActivity {
                 .englishExplain(engExplain)
                 .build();
 
-        // Insert Word to DB.
         mWordViewModel.insert(word);
         mWordViewModel.insert(new ArticleWord(url, segment));
-
     }
 
     private void splitThenProcess(String segment, String url) {
@@ -310,16 +286,6 @@ public class MainActivity extends AppCompatActivity {
      */
     private String extractSinaText(Document doc) {
         return doc.select("section.art_pic_card").text();
-//        Element textElement = doc.getElementById("artibody");
-//        if (textElement == null) {
-//            textElement = doc.getElementById("article");
-//        }
-//        if (textElement == null) {
-//            Log.e("HTMLCHANGED", "");
-//        }
-//
-//        String text = textElement.text();
-//        return text;
     }
 
     public class GetDoc extends AsyncTask<Object, Void, Document> {
