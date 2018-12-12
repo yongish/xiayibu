@@ -1,9 +1,7 @@
 package com.zhiyong.xiayibu.ui.question;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -43,55 +41,52 @@ public class QuestionActivity extends AppCompatActivity {
         btnNever = findViewById(R.id.btnNever);
 
         mQuestionViewModel = ViewModelProviders.of(this).get(QuestionViewModel.class);
-        mQuestionViewModel.getYesNoWords().observe(this, new Observer<List<YesNoWord>>() {
-            @Override
-            public void onChanged(@Nullable List<YesNoWord> yesNoWords) {
-                if (yesNoWords == null || yesNoWords.isEmpty()) {
-                    Toast.makeText(
-                            QuestionActivity.this,
-                            "You either have no words or marked all as \"Don't show again.\"",
-                            Toast.LENGTH_LONG
-                    ).show();
-                    startActivity(new Intent(QuestionActivity.this, MainActivity.class));
-                    return;
-                }
-
-                // "No" words should have priority.
-                List<String> yesWords = new ArrayList<>();
-                List<String> noWords = new ArrayList<>();
-                for (YesNoWord word : yesNoWords) {
-                    switch (responseString(word.getLastResponse())) {
-                        case "Yes":
-                            yesWords.add(word.getWord());
-                            continue;
-                        case "No":
-                            noWords.add(word.getWord());
-                    }
-                }
-                String chosenWord;
-                if (!noWords.isEmpty()) {
-                    chosenWord = noWords.get(rand.nextInt(noWords.size()));
-                } else {
-                    chosenWord = yesWords.get(rand.nextInt(yesWords.size()));
-                }
-                tvWord.setText(chosenWord);
-
-                final Question.QuestionBuilder questionBuilder = new Question.QuestionBuilder()
-                        .timestamp(System.currentTimeMillis())
-                        .word(chosenWord);
-                btnYes.setOnClickListener(v -> {
-                    mQuestionViewModel.insert(questionBuilder.response(responseInt("Yes")).build());
-//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
-                });
-                btnNo.setOnClickListener(v -> {
-                    mQuestionViewModel.insert(questionBuilder.response(responseInt("No")).build());
-//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
-                });
-                btnNever.setOnClickListener(v -> {
-                    mQuestionViewModel.insert(questionBuilder.response(responseInt("Never")).build());
-//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
-                });
+        mQuestionViewModel.getYesNoWords().observe(this, yesNoWords -> {
+            if (yesNoWords == null || yesNoWords.isEmpty()) {
+                Toast.makeText(
+                        QuestionActivity.this,
+                        "You either have no words or marked all as \"Don't show again.\"",
+                        Toast.LENGTH_LONG
+                ).show();
+                startActivity(new Intent(QuestionActivity.this, MainActivity.class));
+                return;
             }
+
+            // "No" words should have priority.
+            List<String> yesWords = new ArrayList<>();
+            List<String> noWords = new ArrayList<>();
+            for (YesNoWord word : yesNoWords) {
+                switch (responseString(word.getLastResponse())) {
+                    case "Yes":
+                        yesWords.add(word.getWord());
+                        continue;
+                    case "No":
+                        noWords.add(word.getWord());
+                }
+            }
+            String chosenWord;
+            if (!noWords.isEmpty()) {
+                chosenWord = noWords.get(rand.nextInt(noWords.size()));
+            } else {
+                chosenWord = yesWords.get(rand.nextInt(yesWords.size()));
+            }
+            tvWord.setText(chosenWord);
+
+            final Question.QuestionBuilder questionBuilder = new Question.QuestionBuilder()
+                    .timestamp(System.currentTimeMillis())
+                    .word(chosenWord);
+            btnYes.setOnClickListener(v -> {
+                mQuestionViewModel.insert(questionBuilder.response(responseInt("Yes")).build());
+//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
+            });
+            btnNo.setOnClickListener(v -> {
+                mQuestionViewModel.insert(questionBuilder.response(responseInt("No")).build());
+//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
+            });
+            btnNever.setOnClickListener(v -> {
+                mQuestionViewModel.insert(questionBuilder.response(responseInt("Never")).build());
+//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
+            });
         });
     }
 }

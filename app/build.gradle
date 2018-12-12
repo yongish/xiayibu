@@ -42,7 +42,7 @@ dependencies {
     implementation "android.arch.lifecycle:extensions:$rootProject.archLifecycleVersion"
     annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archLifecycleVersion"
     implementation 'com.thoughtbot:expandablerecyclerview:1.3'
-    implementation 'com.google.firebase:firebase-auth:16.0.5'
+    implementation 'com.google.firebase:firebase-auth:16.1.0'
     implementation 'com.google.firebase:firebase-core:16.0.6'
     // https://mvnrepository.com/artifact/com.huaban/jieba-analysis
     implementation 'com.huaban:jieba-analysis:1.0.2'
