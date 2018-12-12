@@ -84,16 +84,12 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                     responseString(current.getLastAskedResponse()),
                     getDateTimeInstance(MEDIUM, SHORT).format(new Date(current.getTimeLastAsked()))
             ));
-            wordViewHolder.tvLastAskedResponse.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final String[] grpname = new String[]{"Yes", "No", "Don't show again"};
-                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                    builder.setTitle("Change response")
-                            .setSingleChoiceItems(grpname, -1,
-                                    new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
+            wordViewHolder.tvLastAskedResponse.setOnClickListener(v -> {
+                final String[] grpname = new String[]{"Yes", "No", "Don't show again"};
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Change response")
+                        .setSingleChoiceItems(grpname, -1,
+                                (dialog, which) -> {
                                     long timestamp = System.currentTimeMillis();
                                     mQuestionViewModel.insert(new Question(
                                             timestamp,
@@ -106,10 +102,8 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                                     ));
                                     notifyDataSetChanged();
                                     dialog.dismiss();
-                                }
-                            });
-                    builder.create().show();
-                }
+                                });
+                builder.create().show();
             });
         }
     }
@@ -131,18 +125,22 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                       final WordViewModel viewModel) {
         final int adapterPosition = viewHolder.getAdapterPosition();
         final WordItem wordItem = mWordItems.get(adapterPosition);
-        final Word word = new Word(wordItem.getWord());
+
+        final Word word = new Word.WordBuilder()
+                .word(wordItem.getWord())
+                .pinyin(wordItem.getPinyin())
+                .chineseExplain(wordItem.getChineseExplain())
+                .englishExplain(wordItem.getEnglishExplain())
+                .baikePreview(wordItem.getBaikePreview())
+                .build();
 
         Snackbar snackbar = Snackbar
                 .make(mRecyclerView, "Removed word", Snackbar.LENGTH_LONG)
-                .setAction("Undo", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        mWordItems.add(adapterPosition, wordItem);
-                        notifyItemInserted(adapterPosition);
-                        viewModel.insert(word);
-                        mRecyclerView.scrollToPosition(adapterPosition);
-                    }
+                .setAction("Undo", v -> {
+                    mWordItems.add(adapterPosition, wordItem);
+                    notifyItemInserted(adapterPosition);
+                    viewModel.insert(word);
+                    mRecyclerView.scrollToPosition(adapterPosition);
                 });
         snackbar.show();
         mWordItems.remove(adapterPosition);

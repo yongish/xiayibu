@@ -53,14 +53,23 @@ public abstract class WordRoomDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            mDao.deleteAll();
+            mDao.deleteAllArticles();
+            mDao.deleteAllArticleWords();
+            mDao.deleteAllQuestions();
+
             if (mDao.getAnyWord().length < 1) {
                 for (int i = 0; i <= words.length - 1; i++) {
-                    Word word = new Word(words[i]);
+                    Word word = new Word(words[i], "pinyin" + i,
+                            null, null, null);
                     mDao.insert(word);
                     mDao.insert(new Article("url" + i, "title" + i,
                             System.currentTimeMillis() - 1,
                             System.currentTimeMillis() - 2));
-                    mDao.insert(new ArticleWord("url" + i, words[i]));
+                    mDao.insert(new ArticleWord(
+                            "url" + i,
+                            words[i]
+                    ));
                 }
             }
             return null;

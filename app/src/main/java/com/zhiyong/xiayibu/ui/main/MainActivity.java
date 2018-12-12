@@ -1,10 +1,8 @@
 package com.zhiyong.xiayibu.ui.main;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,11 +12,14 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.huaban.analysis.jieba.JiebaSegmenter;
+import com.zhiyong.xiayibu.db.Article;
+import com.zhiyong.xiayibu.db.Word;
 import com.zhiyong.xiayibu.ui.article.ArticleActivity;
 import com.zhiyong.xiayibu.R;
+import com.zhiyong.xiayibu.ui.article.ArticleViewModel;
+import com.zhiyong.xiayibu.ui.article.ArticleViewModelFactory;
 import com.zhiyong.xiayibu.ui.question.QuestionActivity;
 import com.zhiyong.xiayibu.ui.question.QuestionViewModel;
 
@@ -27,8 +28,11 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -36,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String BAIDU_DICT_URL_PREPEND = "https://dict.baidu.com/s?wd=";
 
     private WordViewModel mWordViewModel;
+    private ArticleViewModel mArticleViewModel;
     private final JiebaSegmenter segmenter = new JiebaSegmenter();
 
     @Override
@@ -60,20 +65,18 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mWordViewModel = ViewModelProviders.of(this).get(WordViewModel.class);
-        mWordViewModel.getWordItems().observe(this, new Observer<List<WordItem>>() {
-            @Override
-            public void onChanged(@Nullable List<WordItem> wordItems) {
-                adapter.setWordItems(wordItems);
-            }
-        });
+        mWordViewModel.getWordItems().observe(
+                this, wordItems -> adapter.setWordItems(wordItems)
+        );
+
+        mArticleViewModel = ViewModelProviders
+                .of(this, new ArticleViewModelFactory(this.getApplication(), null))
+                .get(ArticleViewModel.class);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, QuestionActivity.class));
-            }
-        });
+        fab.setOnClickListener(view ->
+                startActivity(new Intent(MainActivity.this, QuestionActivity.class))
+        );
 
         // Add the functionality to swipe items in the
         // recycler view to delete that item
@@ -145,7 +148,31 @@ public class MainActivity extends AppCompatActivity {
      * @param url
      */
     private void processArticle(String url) {
-        String text = extractSinaText(url);
+        // Insert article to DB.
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            Log.e("URL ISSUE", "processArticle: " + e.getMessage());
+        }
+        String title = doc.getElementsByClass("main-title").get(0).text();
+        String chineseDate = doc.getElementsByClass("date").get(0).text();
+
+        DateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+        long timestamp_published = 0;
+        try {
+            Date date = format.parse(chineseDate);
+            timestamp_published = date.getTime();
+        } catch (ParseException e) {
+            Log.e("PARSE TIME", "processArticle: " + e.getMessage());
+        }
+
+        mArticleViewModel.insert(
+                new Article(url, title, System.currentTimeMillis(), timestamp_published)
+        );
+
+        // Parse and insert words.
+        String text = extractSinaText(doc);
         Set<String> segments = new HashSet<>(segmenter.sentenceProcess(text));
         segments.stream()
                 .filter(segment -> Character.UnicodeScript.of(segment.charAt(0)) == Character.UnicodeScript.HAN)
@@ -158,9 +185,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private void processSegment(String segment) {
         Document dictDoc = null;
-        String initialUrl = BAIDU_DICT_URL_PREPEND + segment;
         try {
-            dictDoc = Jsoup.connect(initialUrl).get();
+            dictDoc = Jsoup.connect(BAIDU_DICT_URL_PREPEND + segment).get();
         } catch (IOException e) {
             Log.e("URL ISSUE", "processSegment: " + e.getMessage());
         }
@@ -190,18 +216,21 @@ public class MainActivity extends AppCompatActivity {
         if (pinyinWrapper == null) {
             splitThenProcess(segment);
         }
-        WordDefinition.WordDefinitionBuilder builder = new WordDefinition.WordDefinitionBuilder();
+        Word.WordBuilder builder = new Word.WordBuilder();
         String pinyin = pinyinWrapper.selectFirst("b").text()
                 .replace("[", "").replace("]", "").trim();
 
         Element basicWrapper = dictDoc.getElementById("basicmean-wrapper");
-        WordDefinition definition = null;
+        Word word;
         if (basicWrapper == null) {
             Element baikeWrapper = dictDoc.getElementById("baike-wrapper");
             if (baikeWrapper == null) {
-
+                word = builder.pinyin(pinyin).build();
             } else {
-                definition = builder.pinyin(pinyin).baikePreview(initialUrl).build();
+                word = builder
+                        .pinyin(pinyin)
+                        .baikePreview(baikeWrapper.selectFirst("p").text())
+                        .build();
             }
         }
         String chineseExplain = basicWrapper.child(1).text().trim();
@@ -210,13 +239,15 @@ public class MainActivity extends AppCompatActivity {
             chineseExplain = chineseExplain.substring(start + 1).trim();
         }
         String engExplain = dictDoc.getElementById("fanyi-wrapper").child(1).text().trim();
-        definition = builder
+        word = builder
                 .pinyin(pinyin)
                 .chineseExplain(chineseExplain)
                 .englishExplain(engExplain)
                 .build();
 
-        // Insert WordDefinition to DB.
+        // Insert Word to DB.
+        mWordViewModel.insert(word);
+
     }
 
     private void splitThenProcess(String segment) {
@@ -226,16 +257,10 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Return text from Sina article. HTML format may change in future, so may need to update this
      * function.
-     * @param url
+     * @param doc
      * @return
      */
-    private String extractSinaText(String url) {
-        Document doc = null;
-        try {
-            doc = Jsoup.connect(url).get();
-        } catch (IOException e) {
-            Log.e("URL ISSUE", "processArticle: " + e.getMessage());
-        }
+    private String extractSinaText(Document doc) {
         Element textElement = doc.getElementById("artibody");
         if (textElement == null) {
             textElement = doc.getElementById("article");

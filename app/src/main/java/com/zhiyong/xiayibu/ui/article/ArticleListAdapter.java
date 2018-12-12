@@ -42,13 +42,10 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
         if (mArticles != null) {
             final Article current = mArticles.get(i);
             articleViewHolder.tvTitle.setText(current.getTitle());
-            articleViewHolder.tvTitle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(current.getUrl()));
-                    context.startActivity(intent);
-                }
+            articleViewHolder.tvTitle.setOnClickListener(v -> {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(current.getUrl()));
+                context.startActivity(intent);
             });
             articleViewHolder.tvAdded.setText(
                     String.format(

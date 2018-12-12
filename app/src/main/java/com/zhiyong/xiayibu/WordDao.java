@@ -34,6 +34,15 @@ public interface WordDao {
     @Query("DELETE FROM word_table")
     void deleteAll();
 
+    @Query("DELETE FROM article")
+    void deleteAllArticles();
+
+    @Query("DELETE FROM article_word")
+    void deleteAllArticleWords();
+
+    @Query("DELETE FROM question")
+    void deleteAllQuestions();
+
     @Query("DELETE FROM word_table WHERE word = :wordString")
     void delete(String wordString);
 
@@ -50,12 +59,21 @@ public interface WordDao {
             "       MIN(a.timestamp_added) AS timeAdded,\n" +
             "       MAX(q.timestamp) AS timeLastAsked,\n" +
             "       response AS lastAskedResponse,\n" +
-            "       COUNT(DISTINCT a.url) AS articleCount\n" +
+            "       COUNT(DISTINCT a.url) AS articleCount,\n" +
+            "       pinyin,\n" +
+            "       chinese_explain AS chineseExplain,\n" +
+            "       english_explain AS englishExplain,\n" +
+            "       baike_preview AS baikePreview\n" +
             "FROM article_word aw\n" +
             "JOIN article a ON aw.url = a.url\n" +
+            "JOIN word_table w ON aw.word = w.word\n" +
             "LEFT JOIN question q ON aw.word = q.word\n" +
-            "GROUP BY aw.word\n" +
-            "ORDER BY aw.word")
+            "GROUP BY aw.word,\n" +
+            "         pinyin,\n" +
+            "         chinese_explain,\n" +
+            "         english_explain,\n" +
+            "         baike_preview\n" +
+            "ORDER BY pinyin")
     LiveData<List<WordItem>> getWordItems();
 
     @Query("SELECT tmp.word,\n" +
