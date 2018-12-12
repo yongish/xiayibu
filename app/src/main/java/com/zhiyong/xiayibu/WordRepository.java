@@ -5,6 +5,7 @@ import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
 import com.zhiyong.xiayibu.db.Article;
+import com.zhiyong.xiayibu.db.ArticleWord;
 import com.zhiyong.xiayibu.db.Question;
 import com.zhiyong.xiayibu.db.Word;
 import com.zhiyong.xiayibu.ui.main.WordItem;
@@ -58,6 +59,24 @@ public class WordRepository {
         @Override
         protected Void doInBackground(Word... words) {
             mAsyncTaskDao.insert(words[0]);
+            return null;
+        }
+    }
+
+    public void insert(ArticleWord articleWord) {
+        new insertArticleWordAsyncTask(mWordDao).execute(articleWord);
+    }
+
+    public static class insertArticleWordAsyncTask extends AsyncTask<ArticleWord, Void, Void> {
+        private WordDao mAsyncTaskDao;
+
+        insertArticleWordAsyncTask(WordDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(ArticleWord... articleWords) {
+            mAsyncTaskDao.insert(articleWords[0]);
             return null;
         }
     }

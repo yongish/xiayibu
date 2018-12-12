@@ -13,8 +13,7 @@ import com.zhiyong.xiayibu.db.ArticleWord;
 import com.zhiyong.xiayibu.db.Question;
 import com.zhiyong.xiayibu.db.Word;
 
-@Database(entities = {Word.class, Article.class, ArticleWord.class, Question.class}, version = 1,
-        exportSchema = false)
+@Database(entities = {Word.class, Article.class, ArticleWord.class, Question.class}, version = 1)
 public abstract class WordRoomDatabase extends RoomDatabase {
 
     public abstract WordDao wordDao();
@@ -53,25 +52,25 @@ public abstract class WordRoomDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            mDao.deleteAll();
-            mDao.deleteAllArticles();
-            mDao.deleteAllArticleWords();
-            mDao.deleteAllQuestions();
-
-            if (mDao.getAnyWord().length < 1) {
-                for (int i = 0; i <= words.length - 1; i++) {
-                    Word word = new Word(words[i], "pinyin" + i,
-                            null, null, null);
-                    mDao.insert(word);
-                    mDao.insert(new Article("url" + i, "title" + i,
-                            System.currentTimeMillis() - 1,
-                            System.currentTimeMillis() - 2));
-                    mDao.insert(new ArticleWord(
-                            "url" + i,
-                            words[i]
-                    ));
-                }
-            }
+//            mDao.deleteAll();
+//            mDao.deleteAllArticles();
+//            mDao.deleteAllArticleWords();
+//            mDao.deleteAllQuestions();
+//
+//            if (mDao.getAnyWord().length < 1) {
+//                for (int i = 0; i <= words.length - 1; i++) {
+//                    Word word = new Word(words[i], "pinyin" + i,
+//                            null, null, null);
+//                    mDao.insert(word);
+//                    mDao.insert(new Article("url" + i, "title" + i,
+//                            System.currentTimeMillis() - 1,
+//                            System.currentTimeMillis() - 2));
+//                    mDao.insert(new ArticleWord(
+//                            "url" + i,
+//                            words[i]
+//                    ));
+//                }
+//            }
             return null;
         }
     }

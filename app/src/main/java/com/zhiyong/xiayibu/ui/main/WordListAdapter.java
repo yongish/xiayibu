@@ -2,7 +2,6 @@ package com.zhiyong.xiayibu.ui.main;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -55,14 +54,11 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
             WordItem current = mWordItems.get(i);
             final String word = current.getWord();
             wordViewHolder.wordItemView.setText(word);
-            wordViewHolder.wordItemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String url = "https://baike.baidu.com/item/" + word;
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setData(Uri.parse(url));
-                    context.startActivity(intent);
-                }
+            wordViewHolder.wordItemView.setOnClickListener(v -> {
+                String url = "https://baike.baidu.com/item/" + word;
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                context.startActivity(intent);
             });
             wordViewHolder.tvTimeAdded.setText(
                     getDateInstance().format(new Date(current.getTimeAdded()))
@@ -72,13 +68,10 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                     context.getResources().getQuantityString(
                             R.plurals.article_count, articleCount
                     ), articleCount));
-            wordViewHolder.tvArticleCount.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, ArticleActivity.class);
-                    intent.putExtra(EXTRA_WORD, word);
-                    context.startActivity(intent);
-                }
+            wordViewHolder.tvArticleCount.setOnClickListener(v -> {
+                Intent intent = new Intent(context, ArticleActivity.class);
+                intent.putExtra(EXTRA_WORD, word);
+                context.startActivity(intent);
             });
             wordViewHolder.tvLastAskedResponse.setText(String.format("%s at %s",
                     responseString(current.getLastAskedResponse()),

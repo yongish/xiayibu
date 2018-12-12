@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
 import com.zhiyong.xiayibu.WordRepository;
+import com.zhiyong.xiayibu.db.ArticleWord;
 import com.zhiyong.xiayibu.db.Word;
 
 import java.util.List;
@@ -27,6 +28,10 @@ public class WordViewModel extends AndroidViewModel {
 
     public void insert(Word word) {
         mRepository.insert(word);
+    }
+
+    public void insert(ArticleWord articleWord) {
+        mRepository.insert(articleWord);
     }
 
     public void deleteAll() {

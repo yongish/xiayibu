@@ -20,12 +20,12 @@ import static android.arch.persistence.room.OnConflictStrategy.IGNORE;
 @Dao
 public interface WordDao {
     @Insert(onConflict = IGNORE)
-    void insert(Word word);
+    long insert(Word word);
 
-    @Insert
+    @Insert(onConflict = IGNORE)
     void insert(Article article);
 
-    @Insert
+    @Insert(onConflict = IGNORE)
     void insert(ArticleWord articleWord);
 
     @Insert
@@ -85,7 +85,7 @@ public interface WordDao {
             "   FROM word_table w\n" +
             "   LEFT JOIN question q ON w.word = q.word\n" +
             "   GROUP BY w.word) tmp\n" +
-            "JOIN question q1 ON tmp.word = q1.word\n" +
+            "LEFT JOIN question q1 ON tmp.word = q1.word\n" +
             "AND tmp.lastTimestamp = q1.timestamp\n" +
             "WHERE response != 2\n" +
             "  OR response IS NULL")

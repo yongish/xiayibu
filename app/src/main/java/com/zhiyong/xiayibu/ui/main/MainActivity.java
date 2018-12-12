@@ -2,6 +2,7 @@ package com.zhiyong.xiayibu.ui.main;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.view.MenuItem;
 
 import com.huaban.analysis.jieba.JiebaSegmenter;
 import com.zhiyong.xiayibu.db.Article;
+import com.zhiyong.xiayibu.db.ArticleWord;
 import com.zhiyong.xiayibu.db.Word;
 import com.zhiyong.xiayibu.ui.article.ArticleActivity;
 import com.zhiyong.xiayibu.R;
@@ -37,7 +39,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
-    public static final String BAIDU_DICT_URL_PREPEND = "https://dict.baidu.com/s?wd=";
+    public static final String BAIDU_DICT_URL = "https://dict.baidu.com";
+    public static final String BAIDU_DICT_URL_PREPEND = BAIDU_DICT_URL + "/s?wd=";
 
     private WordViewModel mWordViewModel;
     private ArticleViewModel mArticleViewModel;
@@ -47,14 +50,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Intent intent = getIntent();
-        String action = intent.getAction();
-        String type = intent.getType();
-        if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
-            String url = intent.getStringExtra(Intent.EXTRA_TEXT);
-            processArticle(url);
-        }
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,6 +67,17 @@ public class MainActivity extends AppCompatActivity {
         mArticleViewModel = ViewModelProviders
                 .of(this, new ArticleViewModelFactory(this.getApplication(), null))
                 .get(ArticleViewModel.class);
+
+        Intent intent = getIntent();
+        String action = intent.getAction();
+        String type = intent.getType();
+        if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
+            String url = intent.getStringExtra(Intent.EXTRA_TEXT);
+
+
+            url = "https://news.sina.cn/gn/2018-11-19/detail-ihnyuqhi3254063.d.html";
+            processArticle(url);
+        }
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view ->
@@ -151,14 +157,18 @@ public class MainActivity extends AppCompatActivity {
         // Insert article to DB.
         Document doc = null;
         try {
-            doc = Jsoup.connect(url).get();
-        } catch (IOException e) {
+            doc = new GetDoc().execute(url).get();
+        } catch (Exception e) {
             Log.e("URL ISSUE", "processArticle: " + e.getMessage());
         }
-        String title = doc.getElementsByClass("main-title").get(0).text();
-        String chineseDate = doc.getElementsByClass("date").get(0).text();
+//        String title = doc.getElementsByClass("title").get(0).text();
+        String title = doc.select("title").get(0).childNodes().get(0).toString();
 
-        DateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+//        String chineseDate = doc.getElementsByClass("date").get(0).text();
+        String chineseDate = doc.select("meta[property=article:published_time]").get(0).attr("content");
+
+//        DateFormat format = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long timestamp_published = 0;
         try {
             Date date = format.parse(chineseDate);
@@ -167,6 +177,11 @@ public class MainActivity extends AppCompatActivity {
             Log.e("PARSE TIME", "processArticle: " + e.getMessage());
         }
 
+        if (mArticleViewModel == null) {
+            mArticleViewModel = ViewModelProviders
+                    .of(this, new ArticleViewModelFactory(this.getApplication(), null))
+                    .get(ArticleViewModel.class);
+        }
         mArticleViewModel.insert(
                 new Article(url, title, System.currentTimeMillis(), timestamp_published)
         );
@@ -174,26 +189,47 @@ public class MainActivity extends AppCompatActivity {
         // Parse and insert words.
         String text = extractSinaText(doc);
         Set<String> segments = new HashSet<>(segmenter.sentenceProcess(text));
-        segments.stream()
-                .filter(segment -> Character.UnicodeScript.of(segment.charAt(0)) == Character.UnicodeScript.HAN)
-                .forEach(this::processSegment);
+
+        // todo: delete;
+        int i = 0;
+        for (String segment : segments) {
+            if (i > 1) {
+                break;
+            }
+            i++;
+
+            if (Character.UnicodeScript.of(segment.charAt(0)) == Character.UnicodeScript.HAN) {
+                processSegment(segment, url);
+            }
+        }
+
+//        segments.stream()
+//                .filter(segment -> Character.UnicodeScript.of(segment.charAt(0)) == Character.UnicodeScript.HAN)
+//                .forEach(this::processSegment);
     }
 
     /**
      * Uses Baidu dict. May need to change with changes in Baidu dict HTML format.
      * @param segment
      */
-    private void processSegment(String segment) {
+    private void processSegment(String segment, String url) {
         Document dictDoc = null;
         try {
-            dictDoc = Jsoup.connect(BAIDU_DICT_URL_PREPEND + segment).get();
-        } catch (IOException e) {
+            dictDoc = new GetDoc().execute(BAIDU_DICT_URL_PREPEND + segment).get();
+        } catch (Exception e) {
             Log.e("URL ISSUE", "processSegment: " + e.getMessage());
         }
 
         // May be a multiple-choice page. If so, select 1st choice.
         Element pinyinWrapper = dictDoc.getElementById("pinyin");
-        if (pinyinWrapper == null && !dictDoc.text().contains("百度汉语中没有收录")) {
+        if (pinyinWrapper == null && !dictDoc.text().contains("没有收录")) {
+
+            // todo: delete
+            if (dictDoc.getElementById("data-container") == null) {
+                System.out.println(segment);
+                System.out.println("AAAAAAAAAAAAAAAAAAAAAA");
+            }
+
             String href = dictDoc.getElementById("data-container").selectFirst("a").attr("href");
             // Regard 1st choice as irrelevant if it is >1 character longer than the segment.
             int start = href.indexOf("=");
@@ -203,20 +239,23 @@ public class MainActivity extends AppCompatActivity {
             }
             int hrefLength = href.substring(start + 1, end).length();
             if (hrefLength - segment.length() > 1) {
-                splitThenProcess(segment);
+                splitThenProcess(segment, url);
+                return;
             }
 
             try {
-                dictDoc = Jsoup.connect(BAIDU_DICT_URL_PREPEND + href).get();
-            } catch (IOException e) {
+                dictDoc = new GetDoc().execute(BAIDU_DICT_URL + href).get();
+            } catch (Exception e) {
                 Log.e("URL ISSUE HREF", "processSegment: " + e.getMessage());
             }
             pinyinWrapper = dictDoc.getElementById("pinyin");
         }
         if (pinyinWrapper == null) {
-            splitThenProcess(segment);
+            splitThenProcess(segment, url);
+            return;
         }
         Word.WordBuilder builder = new Word.WordBuilder();
+
         String pinyin = pinyinWrapper.selectFirst("b").text()
                 .replace("[", "").replace("]", "").trim();
 
@@ -225,21 +264,28 @@ public class MainActivity extends AppCompatActivity {
         if (basicWrapper == null) {
             Element baikeWrapper = dictDoc.getElementById("baike-wrapper");
             if (baikeWrapper == null) {
-                word = builder.pinyin(pinyin).build();
+                word = builder.word(segment).pinyin(pinyin).build();
             } else {
                 word = builder
+                        .word(segment)
                         .pinyin(pinyin)
                         .baikePreview(baikeWrapper.selectFirst("p").text())
                         .build();
             }
+            mWordViewModel.insert(word);
+            return;
         }
-        String chineseExplain = basicWrapper.child(1).text().trim();
+//        String chineseExplain = basicWrapper.child(1).text().trim();
+        System.out.println(segment);
+        String chineseExplain = basicWrapper.select("dd").text();
         int start = chineseExplain.indexOf("]");
         if (start != -1) {
             chineseExplain = chineseExplain.substring(start + 1).trim();
         }
-        String engExplain = dictDoc.getElementById("fanyi-wrapper").child(1).text().trim();
+//        String engExplain = dictDoc.getElementById("fanyi-wrapper").child(1).text().trim();
+        String engExplain = dictDoc.getElementById("fanyi-wrapper").getElementsByClass("tab-content").text();
         word = builder
+                .word(segment)
                 .pinyin(pinyin)
                 .chineseExplain(chineseExplain)
                 .englishExplain(engExplain)
@@ -247,11 +293,13 @@ public class MainActivity extends AppCompatActivity {
 
         // Insert Word to DB.
         mWordViewModel.insert(word);
+        mWordViewModel.insert(new ArticleWord(url, segment));
 
     }
 
-    private void splitThenProcess(String segment) {
-        segment.chars().mapToObj(String::valueOf).collect(Collectors.toSet()).forEach(this::processSegment);
+    private void splitThenProcess(String segment, String url) {
+        segment.chars().mapToObj(e->(char)e).map(String::valueOf).collect(Collectors.toSet())
+                .forEach(x -> processSegment(x, url));
     }
 
     /**
@@ -261,15 +309,29 @@ public class MainActivity extends AppCompatActivity {
      * @return
      */
     private String extractSinaText(Document doc) {
-        Element textElement = doc.getElementById("artibody");
-        if (textElement == null) {
-            textElement = doc.getElementById("article");
-        }
-        if (textElement == null) {
-            Log.e("HTMLCHANGED", "");
-        }
+        return doc.select("section.art_pic_card").text();
+//        Element textElement = doc.getElementById("artibody");
+//        if (textElement == null) {
+//            textElement = doc.getElementById("article");
+//        }
+//        if (textElement == null) {
+//            Log.e("HTMLCHANGED", "");
+//        }
+//
+//        String text = textElement.text();
+//        return text;
+    }
 
-        String text = textElement.text();
-        return text;
+    public class GetDoc extends AsyncTask<Object, Void, Document> {
+        @Override
+        protected Document doInBackground(Object... strings) {
+            Document result = null;
+            try {
+                result = Jsoup.connect(strings[0].toString()).get();
+            } catch (IOException e) {
+                Log.e("URL ISSUE", "doInBackground: " + e.getMessage());
+            }
+            return result;
+        }
     }
 }
