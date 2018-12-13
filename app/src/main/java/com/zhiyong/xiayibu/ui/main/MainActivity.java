@@ -1,5 +1,7 @@
 package com.zhiyong.xiayibu.ui.main;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -13,6 +15,8 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.huaban.analysis.jieba.JiebaSegmenter;
 import com.zhiyong.xiayibu.db.Article;
@@ -44,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
 
     private WordViewModel mWordViewModel;
     private ArticleViewModel mArticleViewModel;
+    private ProgressBar progressBar;
+
     private final JiebaSegmenter segmenter = new JiebaSegmenter();
 
     @Override
@@ -74,7 +80,10 @@ public class MainActivity extends AppCompatActivity {
         if (Intent.ACTION_SEND.equals(action) && "text/plain".equals(type)) {
             String url = intent.getStringExtra(Intent.EXTRA_TEXT);
 //            url = "https://news.sina.cn/gn/2018-11-19/detail-ihnyuqhi3254063.d.html";
-            processArticle(url);
+
+            // Should use AsyncTask.
+            new ProcessArticle().execute(url);
+            Toast.makeText(this, "Started background process to put words into 下一步. This will take some time.", Toast.LENGTH_SHORT).show();
         }
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -102,6 +111,15 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         helper.attachToRecyclerView(recyclerView);
+    }
+
+    private void setDialog(boolean show){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        //View view = getLayoutInflater().inflate(R.layout.progress);
+        builder.setView(R.layout.progress);
+        Dialog dialog = builder.create();
+        if (show)dialog.show();
+        else dialog.dismiss();
     }
 
     @Override
@@ -202,6 +220,8 @@ public class MainActivity extends AppCompatActivity {
             Log.e("URL ISSUE", "processSegment: " + e.getMessage());
         }
 
+        System.out.println(segment);
+        Toast.makeText(this, segment, Toast.LENGTH_SHORT).show();
         // May be a multiple-choice page. If so, select 1st choice.
         Element pinyinWrapper = dictDoc.getElementById("pinyin");
         if (pinyinWrapper == null && !dictDoc.text().contains("没有收录")) {
@@ -231,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             }
             pinyinWrapper = dictDoc.getElementById("pinyin");
         }
-        if (pinyinWrapper == null) {
+        if (pinyinWrapper == null || pinyinWrapper.selectFirst("b") == null) {
             splitThenProcess(segment, url);
             return;
         }
@@ -254,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
                         .build();
             }
             mWordViewModel.insert(word);
+//            Toast.makeText(this, segment, Toast.LENGTH_SHORT).show();
             return;
         }
         String chineseExplain = basicWrapper.select("dd").text();
@@ -270,6 +291,7 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         mWordViewModel.insert(word);
+//        Toast.makeText(this, segment, Toast.LENGTH_SHORT).show();
         mWordViewModel.insert(new ArticleWord(url, segment));
     }
 
@@ -298,6 +320,14 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("URL ISSUE", "doInBackground: " + e.getMessage());
             }
             return result;
+        }
+    }
+
+    public class ProcessArticle extends AsyncTask<String, Void, Void> {
+        @Override
+        protected Void doInBackground(String... strings) {
+            processArticle(strings[0]);
+            return null;
         }
     }
 }

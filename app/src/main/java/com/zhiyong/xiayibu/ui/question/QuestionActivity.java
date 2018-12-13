@@ -2,6 +2,7 @@ package com.zhiyong.xiayibu.ui.question;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -71,6 +72,12 @@ public class QuestionActivity extends AppCompatActivity {
                 chosenWord = yesWords.get(rand.nextInt(yesWords.size()));
             }
             tvWord.setText(chosenWord);
+            tvWord.setOnClickListener(v -> {
+                String url = "https://baike.baidu.com/item/" + chosenWord;
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(url));
+                startActivity(intent);
+            });
 
             final Question.QuestionBuilder questionBuilder = new Question.QuestionBuilder()
                     .timestamp(System.currentTimeMillis())
@@ -85,7 +92,7 @@ public class QuestionActivity extends AppCompatActivity {
             });
             btnNever.setOnClickListener(v -> {
                 mQuestionViewModel.insert(questionBuilder.response(responseInt("Never")).build());
-//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
+                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
             });
         });
     }
