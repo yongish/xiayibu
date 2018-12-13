@@ -73,7 +73,9 @@ public interface WordDao {
             "         chinese_explain,\n" +
             "         english_explain,\n" +
             "         baike_preview\n" +
-            "ORDER BY pinyin")
+            "ORDER BY response,\n" +
+            "         pinyin,\n" +
+            "         MAX(q.timestamp)")
     LiveData<List<WordItem>> getWordItems();
 
     @Query("SELECT tmp.word,\n" +

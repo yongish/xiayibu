@@ -92,7 +92,7 @@ public class QuestionActivity extends AppCompatActivity {
             });
             btnNever.setOnClickListener(v -> {
                 mQuestionViewModel.insert(questionBuilder.response(responseInt("Never")).build());
-                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
+//                    startActivity(new Intent(QuestionActivity.this, QuestionActivity.class));
             });
         });
     }

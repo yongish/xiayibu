@@ -82,7 +82,11 @@ public class MainActivity extends AppCompatActivity {
 //            url = "https://news.sina.cn/gn/2018-11-19/detail-ihnyuqhi3254063.d.html";
 
             // Should use AsyncTask.
-            new ProcessArticle().execute(url);
+            if (url.contains("photo.sina")) {
+                Toast.makeText(this, "Sina photo URLs are not supported.", Toast.LENGTH_SHORT).show();
+            }
+            processArticle(url);
+//            new ProcessArticle().execute(url);
             Toast.makeText(this, "Started background process to put words into 下一步. This will take some time.", Toast.LENGTH_SHORT).show();
         }
 
@@ -190,11 +194,6 @@ public class MainActivity extends AppCompatActivity {
             Log.e("PARSE TIME", "processArticle: " + e.getMessage());
         }
 
-        if (mArticleViewModel == null) {
-            mArticleViewModel = ViewModelProviders
-                    .of(this, new ArticleViewModelFactory(this.getApplication(), null))
-                    .get(ArticleViewModel.class);
-        }
         mArticleViewModel.insert(
                 new Article(url, title, System.currentTimeMillis(), timestamp_published)
         );
