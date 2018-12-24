@@ -1,4 +1,4 @@
-package com.zhiyong.xiayibu.ui.article;
+package com.zhiyong.xiayibu.ui.articlelist;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -10,13 +10,13 @@ import com.zhiyong.xiayibu.db.Article;
 
 import java.util.List;
 
-public class ArticleViewModel extends AndroidViewModel {
+public class ArticleListViewModel extends AndroidViewModel {
 
     private WordRepository mRepository;
     private LiveData<List<Article>> mAllArticles;
     private LiveData<List<Article>> mArticles;
 
-    public ArticleViewModel(@NonNull Application application, String word) {
+    public ArticleListViewModel(@NonNull Application application, String word) {
         super(application);
         mRepository = new WordRepository(application, word);
         mAllArticles = mRepository.getAllArticles();

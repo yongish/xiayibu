@@ -22,10 +22,10 @@ import com.huaban.analysis.jieba.JiebaSegmenter;
 import com.zhiyong.xiayibu.db.Article;
 import com.zhiyong.xiayibu.db.ArticleWord;
 import com.zhiyong.xiayibu.db.Word;
-import com.zhiyong.xiayibu.ui.article.ArticleActivity;
+import com.zhiyong.xiayibu.ui.articlelist.ArticleListActivity;
 import com.zhiyong.xiayibu.R;
-import com.zhiyong.xiayibu.ui.article.ArticleViewModel;
-import com.zhiyong.xiayibu.ui.article.ArticleViewModelFactory;
+import com.zhiyong.xiayibu.ui.articlelist.ArticleListViewModel;
+import com.zhiyong.xiayibu.ui.articlelist.ArticleListViewModelFactory;
 import com.zhiyong.xiayibu.ui.question.QuestionActivity;
 import com.zhiyong.xiayibu.ui.question.QuestionViewModel;
 
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String BAIDU_DICT_URL_PREPEND = BAIDU_DICT_URL + "/s?wd=";
 
     private WordViewModel mWordViewModel;
-    private ArticleViewModel mArticleViewModel;
+    private ArticleListViewModel mArticleListViewModel;
     private ProgressBar progressBar;
 
     private final JiebaSegmenter segmenter = new JiebaSegmenter();
@@ -70,9 +70,9 @@ public class MainActivity extends AppCompatActivity {
                 this, wordItems -> adapter.setWordItems(wordItems)
         );
 
-        mArticleViewModel = ViewModelProviders
-                .of(this, new ArticleViewModelFactory(this.getApplication(), null))
-                .get(ArticleViewModel.class);
+        mArticleListViewModel = ViewModelProviders
+                .of(this, new ArticleListViewModelFactory(this.getApplication(), null))
+                .get(ArticleListViewModel.class);
 
         Intent intent = getIntent();
         String action = intent.getAction();
@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void viewArticles(MenuItem item) {
-        startActivity(new Intent(MainActivity.this, ArticleActivity.class));
+        startActivity(new Intent(MainActivity.this, ArticleListActivity.class));
     }
 
     /**
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("PARSE TIME", "processArticle: " + e.getMessage());
         }
 
-        mArticleViewModel.insert(
+        mArticleListViewModel.insert(
                 new Article(url, title, System.currentTimeMillis(), timestamp_published)
         );
 

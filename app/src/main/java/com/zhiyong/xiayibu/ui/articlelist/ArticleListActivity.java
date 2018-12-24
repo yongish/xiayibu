@@ -1,4 +1,4 @@
-package com.zhiyong.xiayibu.ui.article;
+package com.zhiyong.xiayibu.ui.articlelist;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -16,14 +16,14 @@ import java.util.List;
 
 import static com.zhiyong.xiayibu.ui.main.WordListAdapter.EXTRA_WORD;
 
-public class ArticleActivity extends AppCompatActivity {
+public class ArticleListActivity extends AppCompatActivity {
 
-    private ArticleViewModel mArticleViewModel;
+    private ArticleListViewModel mArticleListViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_article);
+        setContentView(R.layout.activity_list_article);
 
         final String word = getIntent().getStringExtra(EXTRA_WORD);
 
@@ -32,18 +32,18 @@ public class ArticleActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mArticleViewModel = ViewModelProviders
-                .of(this, new ArticleViewModelFactory(this.getApplication(), word))
-                .get(ArticleViewModel.class);
+        mArticleListViewModel = ViewModelProviders
+                .of(this, new ArticleListViewModelFactory(this.getApplication(), word))
+                .get(ArticleListViewModel.class);
         if (word == null) {
-            mArticleViewModel.getAllArticles().observe(this, new Observer<List<Article>>() {
+            mArticleListViewModel.getAllArticles().observe(this, new Observer<List<Article>>() {
                 @Override
                 public void onChanged(@Nullable List<Article> articles) {
                     adapter.setArticles(articles);
                 }
             });
         } else {
-            mArticleViewModel.getArticlesOfWord().observe(this, new Observer<List<Article>>() {
+            mArticleListViewModel.getArticlesOfWord().observe(this, new Observer<List<Article>>() {
                 @Override
                 public void onChanged(@Nullable List<Article> articles) {
                     adapter.setArticles(articles);
@@ -64,7 +64,7 @@ public class ArticleActivity extends AppCompatActivity {
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder,
                                          int direction) {
-                        adapter.onItemRemove(viewHolder, recyclerView, mArticleViewModel);
+                        adapter.onItemRemove(viewHolder, recyclerView, mArticleListViewModel);
                     }
                 });
 

@@ -1,4 +1,4 @@
-package com.zhiyong.xiayibu.ui.article;
+package com.zhiyong.xiayibu.ui.articlelist;
 
 import android.content.Context;
 import android.content.Intent;
@@ -80,7 +80,7 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
 
     void onItemRemove(final RecyclerView.ViewHolder viewHolder,
                       final RecyclerView mRecyclerView,
-                      final ArticleViewModel viewModel) {
+                      final ArticleListViewModel viewModel) {
         final int adapterPosition = viewHolder.getAdapterPosition();
         final Article article = mArticles.get(adapterPosition);
 

@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.db.Question;
 import com.zhiyong.xiayibu.db.Word;
-import com.zhiyong.xiayibu.ui.article.ArticleActivity;
+import com.zhiyong.xiayibu.ui.articlelist.ArticleListActivity;
 import com.zhiyong.xiayibu.ui.question.QuestionViewModel;
 
 import java.util.Date;
@@ -69,7 +69,7 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
                             R.plurals.article_count, articleCount
                     ), articleCount));
             wordViewHolder.tvArticleCount.setOnClickListener(v -> {
-                Intent intent = new Intent(context, ArticleActivity.class);
+                Intent intent = new Intent(context, ArticleListActivity.class);
                 intent.putExtra(EXTRA_WORD, word);
                 context.startActivity(intent);
             });
