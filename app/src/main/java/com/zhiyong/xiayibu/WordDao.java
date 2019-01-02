@@ -10,6 +10,7 @@ import com.zhiyong.xiayibu.db.Article;
 import com.zhiyong.xiayibu.db.ArticleWord;
 import com.zhiyong.xiayibu.db.Question;
 import com.zhiyong.xiayibu.db.Word;
+import com.zhiyong.xiayibu.ui.articletext.WordResponse;
 import com.zhiyong.xiayibu.ui.main.WordItem;
 import com.zhiyong.xiayibu.ui.question.YesNoWord;
 
@@ -46,9 +47,6 @@ public interface WordDao {
     @Query("DELETE FROM word_table WHERE word = :wordString")
     void delete(String wordString);
 
-    @Query("SELECT * FROM word_table LIMIT 1")
-    Word[] getAnyWord();
-
     @Delete
     void deleteWord(Word word);
 
@@ -78,6 +76,19 @@ public interface WordDao {
             "         MAX(q.timestamp)")
     LiveData<List<WordItem>> getWordItems();
 
+    @Query("SELECT word,\n" +
+            "       response AS lastAskedResponse\n" +
+            "FROM\n" +
+            "  (SELECT aw.word,\n" +
+            "          response,\n" +
+            "          MAX(q.timestamp)\n" +
+            "   FROM article_word aw\n" +
+            "   LEFT JOIN question q ON aw.word = q.word\n" +
+            "   WHERE url = :url\n" +
+            "   GROUP BY aw.word,\n" +
+            "            response) tmp")
+    LiveData<List<WordResponse>> getWordResponses(String url);
+
     @Query("SELECT tmp.word,\n" +
             "       lastTimestamp,\n" +
             "       response AS lastResponse\n" +
@@ -98,6 +109,7 @@ public interface WordDao {
 
     @Query("SELECT title,\n" +
             "       a.url,\n" +
+            "       rawText,\n" +
             "       timestamp_added,\n" +
             "       timestamp_published\n" +
             "FROM article a\n" +

@@ -13,7 +13,7 @@ import com.zhiyong.xiayibu.db.ArticleWord;
 import com.zhiyong.xiayibu.db.Question;
 import com.zhiyong.xiayibu.db.Word;
 
-@Database(entities = {Word.class, Article.class, ArticleWord.class, Question.class}, version = 1)
+@Database(entities = {Word.class, Article.class, ArticleWord.class, Question.class}, version = 2)
 public abstract class WordRoomDatabase extends RoomDatabase {
 
     public abstract WordDao wordDao();
@@ -52,6 +52,8 @@ public abstract class WordRoomDatabase extends RoomDatabase {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            // todo: In future, populate a list of common words in a config file.
+
 //            mDao.deleteAll();
 //            mDao.deleteAllArticles();
 //            mDao.deleteAllArticleWords();

@@ -2,7 +2,6 @@ package com.zhiyong.xiayibu.ui.articlelist;
 
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
@@ -44,13 +43,13 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             final Article current = mArticles.get(i);
             articleViewHolder.tvTitle.setText(current.getTitle());
             articleViewHolder.tvTitle.setOnClickListener(v -> {
-//                Intent intent = new Intent(context, ArticleTextActivity.class);
-//                intent.putExtra("url", current.getUrl());
-//                intent.putExtra("title", current.getTitle());
-//                intent.putExtra("text", current.getText());
+                Intent intent = new Intent(context, ArticleTextActivity.class);
+                intent.putExtra("url", current.getUrl());
+                intent.putExtra("title", current.getTitle());
+                intent.putExtra("text", current.getRawText());
 
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse(current.getUrl()));
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                intent.setData(Uri.parse(current.getUrl()));
                 context.startActivity(intent);
             });
             articleViewHolder.tvAdded.setText(

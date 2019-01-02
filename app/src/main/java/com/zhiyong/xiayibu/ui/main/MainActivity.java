@@ -32,6 +32,7 @@ import com.zhiyong.xiayibu.ui.question.QuestionViewModel;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -194,14 +195,14 @@ public class MainActivity extends AppCompatActivity {
             Log.e("PARSE TIME", "processArticle: " + e.getMessage());
         }
 
-        mArticleListViewModel.insert(
-                new Article(url, title, System.currentTimeMillis(), timestamp_published)
-        );
-
         // Parse and insert words.
         String text = extractSinaText(doc);
-        Set<String> segments = new HashSet<>(segmenter.sentenceProcess(text));
 
+        mArticleListViewModel.insert(
+                new Article(url, title, text, System.currentTimeMillis(), timestamp_published)
+        );
+
+        Set<String> segments = new HashSet<>(segmenter.sentenceProcess(text));
         segments.stream()
                 .filter(segment -> Character.UnicodeScript.of(segment.charAt(0)) == Character.UnicodeScript.HAN)
                 .forEach(x -> processSegment(x, url));
@@ -306,7 +307,12 @@ public class MainActivity extends AppCompatActivity {
      * @return
      */
     private String extractSinaText(Document doc) {
-        return doc.select("section.art_pic_card").text();
+        return Jsoup.clean(
+                doc.select("section.art_pic_card").outerHtml(),
+                "",
+                Whitelist.none(),
+                new Document.OutputSettings().prettyPrint(false)
+        );
     }
 
     public class GetDoc extends AsyncTask<Object, Void, Document> {

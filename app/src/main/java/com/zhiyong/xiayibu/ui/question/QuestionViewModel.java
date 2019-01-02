@@ -16,7 +16,7 @@ public class QuestionViewModel extends AndroidViewModel {
 
     public QuestionViewModel(@NonNull Application application) {
         super(application);
-        mRepository = new WordRepository(application, null);
+        mRepository = new WordRepository(application, null, null);
         mYesNoWords = mRepository.getYesNoWords();
     }
 

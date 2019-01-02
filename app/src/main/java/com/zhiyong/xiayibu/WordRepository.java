@@ -8,6 +8,7 @@ import com.zhiyong.xiayibu.db.Article;
 import com.zhiyong.xiayibu.db.ArticleWord;
 import com.zhiyong.xiayibu.db.Question;
 import com.zhiyong.xiayibu.db.Word;
+import com.zhiyong.xiayibu.ui.articletext.WordResponse;
 import com.zhiyong.xiayibu.ui.main.WordItem;
 import com.zhiyong.xiayibu.ui.question.YesNoWord;
 
@@ -16,14 +17,16 @@ import java.util.List;
 public class WordRepository {
     private WordDao mWordDao;
     private LiveData<List<WordItem>> mWordItems;
+    private LiveData<List<WordResponse>> mWordResponses;
     private LiveData<List<Article>> mAllArticles;
     private LiveData<List<Article>> mArticles;
     private LiveData<List<YesNoWord>> mYesNoWords;
 
-    public WordRepository(Application application, String word) {
+    public WordRepository(Application application, String word, String url) {
         WordRoomDatabase db = WordRoomDatabase.getDatabase(application);
         mWordDao = db.wordDao();
         mWordItems = mWordDao.getWordItems();
+        mWordResponses = mWordDao.getWordResponses(url);
         mAllArticles = mWordDao.getAllArticles();
         mArticles = mWordDao.getArticles(word);
         mYesNoWords = mWordDao.getYesNoWords();
@@ -31,6 +34,10 @@ public class WordRepository {
 
     public LiveData<List<WordItem>> getWordItems() {
         return mWordItems;
+    }
+
+    public LiveData<List<WordResponse>> getWordResponses() {
+        return mWordResponses;
     }
 
     public LiveData<List<YesNoWord>> getYesNoWords() {

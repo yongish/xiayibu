@@ -18,7 +18,7 @@ public class ArticleListViewModel extends AndroidViewModel {
 
     public ArticleListViewModel(@NonNull Application application, String word) {
         super(application);
-        mRepository = new WordRepository(application, word);
+        mRepository = new WordRepository(application, word, null);
         mAllArticles = mRepository.getAllArticles();
         mArticles = mRepository.getArticlesOfWord();
     }
