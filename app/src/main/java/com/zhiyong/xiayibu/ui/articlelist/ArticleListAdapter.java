@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.db.Article;
+import com.zhiyong.xiayibu.ui.articletext.ArticleTextActivity;
 
 import java.util.Date;
 import java.util.List;
@@ -43,6 +44,11 @@ public class ArticleListAdapter extends RecyclerView.Adapter<ArticleListAdapter.
             final Article current = mArticles.get(i);
             articleViewHolder.tvTitle.setText(current.getTitle());
             articleViewHolder.tvTitle.setOnClickListener(v -> {
+//                Intent intent = new Intent(context, ArticleTextActivity.class);
+//                intent.putExtra("url", current.getUrl());
+//                intent.putExtra("title", current.getTitle());
+//                intent.putExtra("text", current.getText());
+
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(current.getUrl()));
                 context.startActivity(intent);
