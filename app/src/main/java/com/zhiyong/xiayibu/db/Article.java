@@ -51,4 +51,19 @@ public class Article {
     public long getTimestamp_published() {
         return timestamp_published;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Article article = (Article) o;
+
+        return url.equals(article.url);
+    }
+
+    @Override
+    public int hashCode() {
+        return url.hashCode();
+    }
 }
