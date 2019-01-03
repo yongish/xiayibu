@@ -204,8 +204,6 @@ public class MainActivity extends AppCompatActivity {
                 new Article(url, title, text, System.currentTimeMillis(), timestamp_published)
         );
 
-//        Set<String> segments = new HashSet<>(segmenter.sentenceProcess(text));
-
 //        List<SegToken> segments =
         segmenter.process(text, JiebaSegmenter.SegMode.INDEX)
                 .stream()

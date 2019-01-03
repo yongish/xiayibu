@@ -65,8 +65,11 @@ public class ArticleTextActivity extends AppCompatActivity {
                 TextView definitionView = findViewById(R.id.tvArticleText);
                 definitionView.setMovementMethod(LinkMovementMethod.getInstance());
                 definitionView.setText(oldString, TextView.BufferType.SPANNABLE);
-                Spannable spans = (Spannable) definitionView.getText();
-                BreakIterator iterator = BreakIterator.getWordInstance(Locale.US);
+//                Spannable spans = (Spannable) definitionView.getText();
+
+
+
+                /*BreakIterator iterator = BreakIterator.getWordInstance(Locale.US);
                 iterator.setText(oldString);
                 int start = iterator.first();
                 for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator
@@ -77,14 +80,34 @@ public class ArticleTextActivity extends AppCompatActivity {
                         spans.setSpan(clickSpan, start, end,
                                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                     }
-                }
+                }*/
 
-                Spannable WordtoSpan = new SpannableString(oldString);
+//                Spannable WordtoSpan = new SpannableString(oldString);
                 for (WordResponse wordResponse : wordResponses) {
                     String word = wordResponse.getWord();
                     // Color text by user response.
                     int lastAskedResponse = wordResponse.getLastAskedResponse();
                     if (lastAskedResponse == 0) {
+                        ClickableSpan clickSpan = getClickableSpan(word);
+                        int index = oldString.indexOf(word);
+                        int stopIndex = index + word.length();
+//                        Spannable spans = (Spannable) definitionView.getText();
+                        Spannable spans = new SpannableString(definitionView.getText());
+                        spans.setSpan(clickSpan, index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                        definitionView.setText(spans, TextView.BufferType.SPANNABLE);
+                        while (index >= 0) {
+                            index = oldString.indexOf(word, index + 1);
+                            if (index >= 0) {
+                                stopIndex = index + word.length();
+                                // Need new ClickableSpan for each setSpan().
+                                clickSpan = getClickableSpan(word);
+//                                Spannable spans1 = new SpannableString(definitionView.getText());
+//                                spans = new SpannableString(definitionView.getText());
+                                spans.setSpan(clickSpan, index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//                                definitionView.setText(spans, TextView.BufferType.SPANNABLE);
+                            }
+                        }
+                        definitionView.setText(spans, TextView.BufferType.SPANNABLE);
 //                        setTextHighlight(oldString, word, WordtoSpan, Color.RED);
                     } else if (lastAskedResponse == 1) {
 //                        setTextHighlight(oldString, word, WordtoSpan, Color.YELLOW);
@@ -139,9 +162,6 @@ public class ArticleTextActivity extends AppCompatActivity {
 
 
     private void setTextHighlight(String oldString, String word, Spannable WordtoSpan, int color) {
-        Spannable spans = (Spannable) tvArticleText.getText();
-        ClickableSpan clickSpan = getClickableSpan(word);
-
         int index = oldString.indexOf(word);
         int stopIndex = index + word.length();
         WordtoSpan.setSpan(new BackgroundColorSpan(color), index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -154,6 +174,5 @@ public class ArticleTextActivity extends AppCompatActivity {
                 tvArticleText.setText(WordtoSpan);
             }
         }
-
     }
 }
