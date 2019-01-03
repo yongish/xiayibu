@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.huaban.analysis.jieba.JiebaSegmenter;
+import com.huaban.analysis.jieba.SegToken;
 import com.zhiyong.xiayibu.db.Article;
 import com.zhiyong.xiayibu.db.ArticleWord;
 import com.zhiyong.xiayibu.db.Word;
@@ -40,6 +41,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -202,10 +204,15 @@ public class MainActivity extends AppCompatActivity {
                 new Article(url, title, text, System.currentTimeMillis(), timestamp_published)
         );
 
-        Set<String> segments = new HashSet<>(segmenter.sentenceProcess(text));
-        segments.stream()
-                .filter(segment -> Character.UnicodeScript.of(segment.charAt(0)) == Character.UnicodeScript.HAN)
-                .forEach(x -> processSegment(x, url));
+//        Set<String> segments = new HashSet<>(segmenter.sentenceProcess(text));
+
+//        List<SegToken> segments =
+        segmenter.process(text, JiebaSegmenter.SegMode.INDEX)
+                .stream()
+                .filter(segment -> Character.UnicodeScript.of(segment.word.charAt(0)) == Character.UnicodeScript.HAN)
+                .map(segment -> segment.word)
+                .collect(Collectors.toSet())
+                .forEach(word -> processSegment(word, url));
     }
 
     /**
@@ -213,6 +220,11 @@ public class MainActivity extends AppCompatActivity {
      * @param segment
      */
     private void processSegment(String segment, String url) {
+
+        if (segment.equals("习近平")){
+            System.out.println("found");
+        }
+
         Document dictDoc = null;
         try {
             dictDoc = new GetDoc().execute(BAIDU_DICT_URL_PREPEND + segment).get();
@@ -273,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
                         .baikePreview(baikeWrapper.selectFirst("p").text())
                         .build();
             }
-            mWordViewModel.insert(word);
+            insertWord(word, url, segment);
 //            Toast.makeText(this, segment, Toast.LENGTH_SHORT).show();
             return;
         }
@@ -290,8 +302,12 @@ public class MainActivity extends AppCompatActivity {
                 .englishExplain(engExplain)
                 .build();
 
-        mWordViewModel.insert(word);
+        insertWord(word, url, segment);
 //        Toast.makeText(this, segment, Toast.LENGTH_SHORT).show();
+    }
+
+    private void insertWord(Word word, String url, String segment) {
+        mWordViewModel.insert(word);
         mWordViewModel.insert(new ArticleWord(url, segment));
     }
 
