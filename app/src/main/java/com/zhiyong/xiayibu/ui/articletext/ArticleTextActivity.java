@@ -12,18 +12,13 @@ import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
-import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
-import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhiyong.xiayibu.R;
-
-import java.text.BreakIterator;
-import java.util.Locale;
 
 
 public class ArticleTextActivity extends AppCompatActivity {
@@ -62,76 +57,25 @@ public class ArticleTextActivity extends AppCompatActivity {
             if (wordResponses != null) {
                 String oldString = tvArticleText.getText().toString();
 
-                TextView definitionView = findViewById(R.id.tvArticleText);
-                definitionView.setMovementMethod(LinkMovementMethod.getInstance());
-                definitionView.setText(oldString, TextView.BufferType.SPANNABLE);
-//                Spannable spans = (Spannable) definitionView.getText();
-
-
-
-                /*BreakIterator iterator = BreakIterator.getWordInstance(Locale.US);
-                iterator.setText(oldString);
-                int start = iterator.first();
-                for (int end = iterator.next(); end != BreakIterator.DONE; start = end, end = iterator
-                        .next()) {
-                    String possibleWord = oldString.substring(start, end);
-                    if (Character.isLetterOrDigit(possibleWord.charAt(0))) {
-                        ClickableSpan clickSpan = getClickableSpan(possibleWord);
-                        spans.setSpan(clickSpan, start, end,
-                                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    }
-                }*/
-
-//                Spannable WordtoSpan = new SpannableString(oldString);
+                tvArticleText.setMovementMethod(LinkMovementMethod.getInstance());
+                tvArticleText.setText(oldString, TextView.BufferType.SPANNABLE);
                 for (WordResponse wordResponse : wordResponses) {
                     String word = wordResponse.getWord();
                     // Color text by user response.
                     int lastAskedResponse = wordResponse.getLastAskedResponse();
                     if (lastAskedResponse == 0) {
-                        ClickableSpan clickSpan = getClickableSpan(word);
-                        int index = oldString.indexOf(word);
-                        int stopIndex = index + word.length();
-//                        Spannable spans = (Spannable) definitionView.getText();
-                        Spannable spans = new SpannableString(definitionView.getText());
-                        spans.setSpan(clickSpan, index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                        definitionView.setText(spans, TextView.BufferType.SPANNABLE);
-                        while (index >= 0) {
-                            index = oldString.indexOf(word, index + 1);
-                            if (index >= 0) {
-                                stopIndex = index + word.length();
-                                // Need new ClickableSpan for each setSpan().
-                                clickSpan = getClickableSpan(word);
-//                                Spannable spans1 = new SpannableString(definitionView.getText());
-//                                spans = new SpannableString(definitionView.getText());
-                                spans.setSpan(clickSpan, index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-//                                definitionView.setText(spans, TextView.BufferType.SPANNABLE);
-                            }
-                        }
-                        definitionView.setText(spans, TextView.BufferType.SPANNABLE);
-//                        setTextHighlight(oldString, word, WordtoSpan, Color.RED);
+                        setTextHighlight(tvArticleText, oldString, word, Color.RED);
                     } else if (lastAskedResponse == 1) {
-//                        setTextHighlight(oldString, word, WordtoSpan, Color.YELLOW);
+                        setTextHighlight(tvArticleText, oldString, word, Color.YELLOW);
                     } else {
-//                        setTextHighlight(oldString, word, WordtoSpan, Color.GREEN);
+                        setTextHighlight(tvArticleText, oldString, word, Color.GREEN);
                     }
-
                 }
             }
         });
-
-//        String definition = "Clickable words in text view ".trim();
-
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
     }
 
-    private ClickableSpan getClickableSpan(final String word) {
+    private ClickableSpan getClickableSpan(final String word, int color) {
         return new ClickableSpan() {
             final String mWord;
             {
@@ -144,7 +88,6 @@ public class ArticleTextActivity extends AppCompatActivity {
                 Toast.makeText(widget.getContext(), mWord, Toast.LENGTH_SHORT)
                         .show();
 
-
                 String url = "https://baike.baidu.com/item/" + word;
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(url));
@@ -154,25 +97,28 @@ public class ArticleTextActivity extends AppCompatActivity {
             public void updateDrawState(TextPaint ds) {
                 super.updateDrawState(ds);
                 ds.setColor(Color.BLACK);
-                ds.bgColor = Color.RED;
+                ds.bgColor = color;
                 ds.setUnderlineText(false);
             }
         };
     }
 
-
-    private void setTextHighlight(String oldString, String word, Spannable WordtoSpan, int color) {
+    private void setTextHighlight(TextView textView, String oldString, String word, int color) {
+        ClickableSpan clickSpan = getClickableSpan(word, Color.RED);
         int index = oldString.indexOf(word);
         int stopIndex = index + word.length();
-        WordtoSpan.setSpan(new BackgroundColorSpan(color), index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        tvArticleText.setText(WordtoSpan);
+        Spannable spans = new SpannableString(textView.getText());
+        spans.setSpan(clickSpan, index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         while (index >= 0) {
             index = oldString.indexOf(word, index + 1);
             if (index >= 0) {
                 stopIndex = index + word.length();
-                WordtoSpan.setSpan(new BackgroundColorSpan(color), index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                tvArticleText.setText(WordtoSpan);
+                // Need new ClickableSpan for each setSpan().
+                clickSpan = getClickableSpan(word, color);
+                spans.setSpan(clickSpan, index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
         }
+        textView.setText(spans, TextView.BufferType.SPANNABLE);
     }
+
 }
