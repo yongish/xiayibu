@@ -86,7 +86,8 @@ public interface WordDao {
             "   LEFT JOIN question q ON aw.word = q.word\n" +
             "   WHERE url = :url\n" +
             "   GROUP BY aw.word,\n" +
-            "            response) tmp")
+            "            response" +
+            "   ORDER BY Length(aw.word)) tmp")
     LiveData<List<WordResponse>> getWordResponses(String url);
 
     @Query("SELECT tmp.word,\n" +
