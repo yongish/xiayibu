@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.text.HtmlCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
@@ -57,32 +56,14 @@ public class ArticleTextActivity extends AppCompatActivity {
                     String word = wordResponse.getWord();
                     // Color text by user response.
                     int lastAskedResponse = wordResponse.getLastAskedResponse();
-
-
-                    int index = oldString.indexOf(word);
-                    int stopIndex = index + word.length();
-                    WordtoSpan.setSpan(new ForegroundColorSpan(Color.RED), index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                    tvArticleText.setText(WordtoSpan);
-                    while (index >= 0) {
-                        index = oldString.indexOf(word, index + 1);
-                        if (index >= 0) {
-                            stopIndex = index + word.length();
-                            WordtoSpan.setSpan(new ForegroundColorSpan(Color.BLUE), index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            tvArticleText.setText(WordtoSpan);
-                        }
+                    if (lastAskedResponse == 0) {
+                        setTextHighlight(oldString, word, WordtoSpan, Color.RED);
+                    } else if (lastAskedResponse == 1) {
+                        setTextHighlight(oldString, word, WordtoSpan, Color.YELLOW);
+                    } else {
+                        setTextHighlight(oldString, word, WordtoSpan, Color.GREEN);
                     }
-
-
-//                    if (lastAskedResponse == 0) {
-//                        oldString = oldString.replaceAll(word, "<font color='red'>"+word+"</font>");
-//                    } else if (lastAskedResponse == 1) {
-//                        oldString = oldString.replaceAll(word, "<font color='yellow'>"+word+"</font>");
-//                    } else {
-//                        oldString = oldString.replaceAll(word, "<font color='green'>"+word+"</font>");
-//                    }
                 }
-//                tvArticleText.setText(HtmlCompat.fromHtml(oldString, HtmlCompat.FROM_HTML_MODE_LEGACY));
-//                tvArticleText.setText(WordtoSpan);
             }
         });
 
@@ -94,5 +75,20 @@ public class ArticleTextActivity extends AppCompatActivity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
+    }
+
+    private void setTextHighlight(String oldString, String word, Spannable WordtoSpan, int color) {
+        int index = oldString.indexOf(word);
+        int stopIndex = index + word.length();
+        WordtoSpan.setSpan(new ForegroundColorSpan(color), index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        tvArticleText.setText(WordtoSpan);
+        while (index >= 0) {
+            index = oldString.indexOf(word, index + 1);
+            if (index >= 0) {
+                stopIndex = index + word.length();
+                WordtoSpan.setSpan(new ForegroundColorSpan(color), index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                tvArticleText.setText(WordtoSpan);
+            }
+        }
     }
 }
