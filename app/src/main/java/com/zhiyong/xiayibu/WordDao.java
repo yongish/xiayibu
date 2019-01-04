@@ -76,18 +76,18 @@ public interface WordDao {
             "         MAX(q.timestamp)")
     LiveData<List<WordItem>> getWordItems();
 
-    @Query("SELECT word,\n" +
+    @Query("SELECT tmp.word,\n" +
             "       response AS lastAskedResponse\n" +
             "FROM\n" +
             "  (SELECT aw.word,\n" +
-            "          response,\n" +
-            "          MAX(q.timestamp)\n" +
+            "          MAX(q.timestamp) AS maxTs\n" +
             "   FROM article_word aw\n" +
             "   LEFT JOIN question q ON aw.word = q.word\n" +
             "   WHERE url = :url\n" +
-            "   GROUP BY aw.word,\n" +
-            "            response" +
-            "   ORDER BY Length(aw.word)) tmp")
+            "   GROUP BY aw.word) tmp\n" +
+            "LEFT JOIN question q ON tmp.word = q.word\n" +
+            "AND tmp.maxTs = q.timestamp\n" +
+            "ORDER BY LENGTH(tmp.word)")
     LiveData<List<WordResponse>> getWordResponses(String url);
 
     @Query("SELECT tmp.word,\n" +

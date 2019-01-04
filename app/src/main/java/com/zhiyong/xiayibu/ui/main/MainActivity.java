@@ -218,11 +218,6 @@ public class MainActivity extends AppCompatActivity {
      * @param segment
      */
     private void processSegment(String segment, String url) {
-
-        if (segment.equals("习近平")){
-            System.out.println("found");
-        }
-
         Document dictDoc = null;
         try {
             dictDoc = new GetDoc().execute(BAIDU_DICT_URL_PREPEND + segment).get();

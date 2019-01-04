@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.zhiyong.xiayibu.R;
+import com.zhiyong.xiayibu.Response;
 
 
 public class ArticleTextActivity extends AppCompatActivity {
@@ -62,10 +63,15 @@ public class ArticleTextActivity extends AppCompatActivity {
                 for (WordResponse wordResponse : wordResponses) {
                     String word = wordResponse.getWord();
                     // Color text by user response.
-                    int lastAskedResponse = wordResponse.getLastAskedResponse();
-                    if (lastAskedResponse == 0) {
+                    Response lastAskedResponse = Response.from(wordResponse.getLastAskedResponse());
+
+                    if (word.equals("习近平")) {
+                        System.out.println("OK");
+                    }
+
+                    if (lastAskedResponse == Response.NO) {
                         setTextHighlight(tvArticleText, oldString, word, Color.RED);
-                    } else if (lastAskedResponse == 1) {
+                    } else if (lastAskedResponse == Response.YES) {
                         setTextHighlight(tvArticleText, oldString, word, Color.YELLOW);
                     } else {
                         setTextHighlight(tvArticleText, oldString, word, Color.GREEN);
@@ -104,10 +110,10 @@ public class ArticleTextActivity extends AppCompatActivity {
     }
 
     private void setTextHighlight(TextView textView, String oldString, String word, int color) {
-        ClickableSpan clickSpan = getClickableSpan(word, Color.RED);
         int index = oldString.indexOf(word);
         int stopIndex = index + word.length();
         Spannable spans = new SpannableString(textView.getText());
+        ClickableSpan clickSpan = getClickableSpan(word, color);
         spans.setSpan(clickSpan, index, stopIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         while (index >= 0) {
             index = oldString.indexOf(word, index + 1);
