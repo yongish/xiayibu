@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.zhiyong.xiayibu.R;
 import com.zhiyong.xiayibu.Response;
+import com.zhiyong.xiayibu.ui.articlelist.ArticleListActivity;
 
 
 public class ArticleTextActivity extends AppCompatActivity {
@@ -34,6 +35,12 @@ public class ArticleTextActivity extends AppCompatActivity {
         setContentView(R.layout.activity_article_text);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
+        // todo: Scroll to the correct article in the list of articles.
+        toolbar.setNavigationOnClickListener(
+                v -> startActivity(new Intent(getApplicationContext(), ArticleListActivity.class))
+        );
 
         String url = getIntent().getStringExtra("url");
         String title = getIntent().getStringExtra("title");
@@ -64,11 +71,6 @@ public class ArticleTextActivity extends AppCompatActivity {
                     String word = wordResponse.getWord();
                     // Color text by user response.
                     Response lastAskedResponse = Response.from(wordResponse.getLastAskedResponse());
-
-                    if (word.equals("习近平")) {
-                        System.out.println("OK");
-                    }
-
                     if (lastAskedResponse == Response.NO) {
                         setTextHighlight(tvArticleText, oldString, word, Color.RED);
                     } else if (lastAskedResponse == Response.YES) {

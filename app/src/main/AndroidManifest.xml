@@ -61,7 +61,11 @@
         <activity
             android:name=".ui.articletext.ArticleTextActivity"
             android:label="@string/title_activity_article_text"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.main.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

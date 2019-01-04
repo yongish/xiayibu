@@ -204,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
                 new Article(url, title, text, System.currentTimeMillis(), timestamp_published)
         );
 
-//        List<SegToken> segments =
         segmenter.process(text, JiebaSegmenter.SegMode.INDEX)
                 .stream()
                 .filter(segment -> Character.UnicodeScript.of(segment.word.charAt(0)) == Character.UnicodeScript.HAN)
